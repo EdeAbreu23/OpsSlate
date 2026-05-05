@@ -31,7 +31,15 @@ public sealed class IndexModel : PageModel
                 var read = _jobStatusService.ReadStatus(job.StatusPath);
                 return _jobHealthEvaluator.Evaluate(job, read.fileFound, read.isValidJson, read.status);
             })
-            .OrderBy(j => j.Name)
+            .OrderBy(j => j.FinalStatus switch
+            {
+                "ERROR" => 0,
+                "STALE" => 1,
+                "WARNING" => 2,
+                "SUCCESS" => 3,
+                _ => 4
+            })
+            .ThenBy(j => j.Name)
             .ToList();
     }
 }
