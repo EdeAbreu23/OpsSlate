@@ -1,0 +1,62 @@
+@page
+@model HomelabAutomationCenter.Pages.IndexModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homelab Automation Center</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container">
+    <h1>Homelab Automation Center</h1>
+    <p>Dashboard overview of configured job health.</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Final Status</th>
+            <th>Raw Status</th>
+            <th>Last Run (UTC)</th>
+            <th>Runtime</th>
+            <th>Message</th>
+            <th>Warnings</th>
+            <th>Errors</th>
+            <th>Stale</th>
+            <th>File Found</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (!Model.Jobs.Any())
+        {
+            <tr>
+                <td colspan="11">No jobs found. Check /config/jobs.yml.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var job in Model.Jobs)
+            {
+                <tr>
+                    <td>@job.Id</td>
+                    <td>@job.Name</td>
+                    <td><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></td>
+                    <td>@job.RawStatus</td>
+                    <td>@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</td>
+                    <td>@job.Runtime</td>
+                    <td>@job.Message</td>
+                    <td>@job.Warnings</td>
+                    <td>@job.Errors</td>
+                    <td>@(job.IsStale ? "yes" : "no")</td>
+                    <td>@(job.FileFound ? "yes" : "no")</td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

@@ -1,21 +1,9 @@
 jobs:
-  health_check:
+  - id: health_check
     name: Health Check
-    category: monitoring
-    expected_interval_minutes: 60
-    notify_on_warning: false
-    block_on_warning: false
-
-  automation_backup:
-    name: Automation Backup
-    category: backup
-    expected_interval_minutes: 1440
-    notify_on_warning: true
-    block_on_warning: false
-
-  sync_to_filen:
-    name: Sync to Filen
-    category: sync
-    expected_interval_minutes: 180
-    notify_on_warning: true
-    block_on_warning: false
+    status_path: /status/health_check/status.json
+    stale_after_minutes: 60
+  - id: backup_nas
+    name: NAS Backup
+    status_path: /status/backup_nas/status.json
+    stale_after_minutes: 180

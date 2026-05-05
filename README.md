@@ -1,57 +1,68 @@
-# Homelab Automation Center
+# Homelab Automation Center v1
 
-A health-aware automation dashboard for homelabs (Unraid-friendly).
+Simple self-hostable dashboard for homelab job health status.
 
-## Problem
+## Features
 
-Most tools only answer:
-- “Did my script run?”
+- ASP.NET Core Razor Pages (.NET 8)
+- Reads jobs from `/config/jobs.yml` with YamlDotNet
+- Reads each job's JSON status file from configured `status_path`
+- Final status precedence:
+  1. missing status file = `UNKNOWN`
+  2. invalid JSON = `UNKNOWN`
+  3. errors > 0 or raw status `error` = `ERROR`
+  4. stale = `STALE`
+  5. warnings > 0 or raw status `warning` = `WARNING`
+  6. otherwise `SUCCESS`
 
-They don’t answer:
-- Was it healthy?
-- Did it have warnings?
-- Is it stale?
-- Should dependent jobs run?
+## Local run
 
-## Solution
+```bash
+dotnet build src/HomelabAutomationCenter/HomelabAutomationCenter.csproj
+dotnet run --project src/HomelabAutomationCenter/HomelabAutomationCenter.csproj
+```
 
-This project introduces a simple automation control layer:
+Then open `http://localhost:5087` (or the URL shown in logs).
 
-- Status tracking via `status.json`
-- Health-aware execution (block on errors, allow warnings)
-- Stale detection per job
-- Central dashboard
-- ntfy + monitoring integration
+## Docker
 
-## Features (Prototype)
+```bash
+docker build -t homelab-automation-center:latest .
+docker run --rm -p 8080:8080 \
+  -v $(pwd)/config:/config \
+  -v $(pwd)/status:/status \
+  homelab-automation-center:latest
+```
 
-- SUCCESS / WARNING / ERROR / STALE states
-- Script-level logs
-- Health pre-checks
-- Dashboard generation
+## Docker Compose
 
-## Roadmap (v1)
+```bash
+docker compose up --build -d
+```
 
-- Dockerized dashboard UI
-- jobs.yml config (per-script intervals)
-- warning/error behavior controls
-- ntfy + Uptime Kuma integration
-- Unraid-friendly deployment
+Mounts:
+- `/config:/config`
+- `/status:/status`
 
-## Example status.json
+## Config format (`/config/jobs.yml`)
+
+```yaml
+jobs:
+  - id: health_check
+    name: Health Check
+    status_path: /status/health_check/status.json
+    stale_after_minutes: 60
+```
+
+## Status JSON example
 
 ```json
 {
   "status": "success",
-  "message": "Backup completed",
-  "runtime": 12,
-  "last_run": "2026-05-04T16:23:36"
+  "last_run": "2026-05-05T09:30:00Z",
+  "runtime": "00:00:08",
+  "message": "Health checks completed successfully.",
+  "warnings": 0,
+  "errors": 0
 }
 ```
-
-## Vision
-
-A lightweight automation control plane for homelabs.
-
-Not just “did it run?” — but “should it run?”
-
