@@ -98,22 +98,27 @@ tbody tr:last-child td {
 
 .status-error {
   border-left: 4px solid #f87171;
+  background: rgba(248, 113, 113, 0.06);
 }
 
 .status-stale {
   border-left: 4px solid #a78bfa;
+  background: rgba(167, 139, 250, 0.06);
 }
 
 .status-warning {
   border-left: 4px solid #fbbf24;
+  background: rgba(251, 191, 36, 0.05);
 }
 
 .status-success {
   border-left: 4px solid #4ade80;
+  background: rgba(74, 222, 128, 0.05);
 }
 
 .status-unknown {
   border-left: 4px solid #94a3b8;
+  background: rgba(148, 163, 184, 0.05);
 }
 
 .status-error td:first-child,
