@@ -16,7 +16,7 @@ public sealed class JobHealthEvaluator
         var isStale = IsStale(status.LastRun, job.StaleAfterMinutes);
 
         var finalStatus = DetermineFinal(rawStatus, status.Errors, status.Warnings, isStale);
-        var reason = DetermineReason(finalStatus, status.Errors, status.Warnings);
+        var reason = DetermineReason(finalStatus, status.Errors, status.Warnings, status.LastRun, job.StaleAfterMinutes);
 
         return Base(job, finalStatus, reason, rawStatus, isStale, fileFound, status);
     }
@@ -40,7 +40,7 @@ public sealed class JobHealthEvaluator
         return lastRun.Value < threshold;
     }
 
-    private static string DetermineReason(string finalStatus, int errors, int warnings)
+    private static string DetermineReason(string finalStatus, int errors, int warnings, DateTimeOffset? lastRun, int staleAfterMinutes)
     {
         return finalStatus switch
         {
@@ -50,7 +50,7 @@ public sealed class JobHealthEvaluator
                 > 1 => $"{errors} errors reported",
                 _ => "Error reported"
             },
-            "STALE" => "Last run is stale",
+            "STALE" => FormatStaleReason(lastRun, staleAfterMinutes),
             "WARNING" => warnings switch
             {
                 1 => "1 warning reported",
@@ -60,6 +60,29 @@ public sealed class JobHealthEvaluator
             "SUCCESS" => "Job completed successfully",
             _ => "Status file invalid"
         };
+    }
+
+    private static string FormatStaleReason(DateTimeOffset? lastRun, int staleAfterMinutes)
+    {
+        if (lastRun is null)
+        {
+            return $"Never ran (threshold {staleAfterMinutes}m)";
+        }
+
+        var elapsed = DateTimeOffset.UtcNow - lastRun.Value;
+        if (elapsed < TimeSpan.Zero)
+        {
+            elapsed = TimeSpan.Zero;
+        }
+
+        var totalHours = (int)elapsed.TotalHours;
+        var minutes = elapsed.Minutes;
+
+        var ago = totalHours > 0
+            ? $"{totalHours}h {minutes}m"
+            : $"{minutes}m";
+
+        return $"Last run {ago} ago (threshold {staleAfterMinutes}m)";
     }
 
     private static JobViewModel Base(JobConfig job, string finalStatus, string reason, string rawStatus, bool isStale, bool fileFound, JobStatus? status)
