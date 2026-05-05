@@ -19,6 +19,7 @@
             <th>ID</th>
             <th>Name</th>
             <th>Final Status</th>
+            <th>Reason</th>
             <th>Raw Status</th>
             <th>Last Run (UTC)</th>
             <th>Runtime</th>
@@ -33,7 +34,7 @@
         @if (!Model.Jobs.Any())
         {
             <tr>
-                <td colspan="11">No jobs found. Check /config/jobs.yml.</td>
+                <td colspan="12">No jobs found. Check /config/jobs.yml.</td>
             </tr>
         }
         else
@@ -44,6 +45,7 @@
                     <td>@job.Id</td>
                     <td>@job.Name</td>
                     <td><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></td>
+                    <td>@job.Reason</td>
                     <td>@job.RawStatus</td>
                     <td>@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</td>
                     <td>@job.Runtime</td>

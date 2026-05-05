@@ -5,6 +5,7 @@ public sealed class JobViewModel
     public string Id { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
     public string FinalStatus { get; init; } = "UNKNOWN";
+    public string Reason { get; init; } = "Status file missing";
     public string RawStatus { get; init; } = "unknown";
     public DateTimeOffset? LastRun { get; init; }
     public string Runtime { get; init; } = "-";
