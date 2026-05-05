@@ -44,9 +44,19 @@ public sealed class JobHealthEvaluator
     {
         return finalStatus switch
         {
-            "ERROR" => errors == 1 ? "1 error reported" : $"{errors} errors reported",
+            "ERROR" => errors switch
+            {
+                1 => "1 error reported",
+                > 1 => $"{errors} errors reported",
+                _ => "Error reported"
+            },
             "STALE" => "Last run is stale",
-            "WARNING" => warnings == 1 ? "1 warning reported" : $"{warnings} warnings reported",
+            "WARNING" => warnings switch
+            {
+                1 => "1 warning reported",
+                > 1 => $"{warnings} warnings reported",
+                _ => "Warning reported"
+            },
             "SUCCESS" => "Job completed successfully",
             _ => "Status file invalid"
         };
