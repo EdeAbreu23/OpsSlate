@@ -8,8 +8,8 @@ public sealed class JobHealthEvaluator
     {
         if (!fileFound || !isValidJson || status is null)
         {
-            var reason = fileFound ? "Status file invalid" : "Status file missing";
-            return Base(job, "UNKNOWN", reason, "unknown", false, fileFound, status);
+            var unknownReason = fileFound ? "Status file invalid" : "Status file missing";
+            return Base(job, "UNKNOWN", unknownReason, "unknown", false, fileFound, status);
         }
 
         var rawStatus = (status.Status ?? "unknown").Trim().ToLowerInvariant();

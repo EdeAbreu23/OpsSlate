@@ -5,8 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: homelab-automation-center
     ports:
-      - "8080:8080"
+      - "8099:8080"
     volumes:
-      - ./config:/config
-      - ./status:/status
+      - /mnt/user/appdata/homelab-automation-center/config:/config
+      - /mnt/user/appdata/homelab-automation-center/status:/status
     restart: unless-stopped
