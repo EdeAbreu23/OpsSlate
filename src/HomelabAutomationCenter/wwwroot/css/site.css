@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: #f5f7fb;
+  color: #1e293b;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+th, td {
+  padding: 0.6rem;
+  border: 1px solid #dbe2ea;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #e9eff7;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.badge.success { background: #15803d; }
+.badge.warning { background: #b45309; }
+.badge.error { background: #b91c1c; }
+.badge.stale { background: #6d28d9; }
+.badge.unknown { background: #475569; }

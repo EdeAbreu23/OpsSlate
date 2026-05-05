@@ -1,0 +1,16 @@
+namespace HomelabAutomationCenter.Models;
+
+public sealed class JobViewModel
+{
+    public string Id { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
+    public string FinalStatus { get; init; } = "UNKNOWN";
+    public string RawStatus { get; init; } = "unknown";
+    public DateTimeOffset? LastRun { get; init; }
+    public string Runtime { get; init; } = "-";
+    public string Message { get; init; } = "";
+    public int Warnings { get; init; }
+    public int Errors { get; init; }
+    public bool IsStale { get; init; }
+    public bool FileFound { get; init; }
+}

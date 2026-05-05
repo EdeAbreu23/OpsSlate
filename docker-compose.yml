@@ -1,0 +1,12 @@
+services:
+  homelab-automation-center:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: homelab-automation-center
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/config
+      - ./status:/status
+    restart: unless-stopped
