@@ -1,5 +1,14 @@
 @page
 @model HomelabAutomationCenter.Pages.IndexModel
+@{
+    var totalJobs = Model.Jobs.Count;
+    var errorJobs = Model.Jobs.Count(job => job.FinalStatus == "ERROR");
+    var blockedJobs = Model.Jobs.Count(job => job.FinalStatus == "BLOCKED");
+    var staleJobs = Model.Jobs.Count(job => job.FinalStatus == "STALE");
+    var warningJobs = Model.Jobs.Count(job => job.FinalStatus == "WARNING");
+    var successJobs = Model.Jobs.Count(job => job.FinalStatus == "SUCCESS");
+    var unknownJobs = Model.Jobs.Count(job => job.FinalStatus == "UNKNOWN");
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +21,37 @@
 <main class="container">
     <h1>Homelab Automation Center</h1>
     <p>Dashboard overview of configured job health.</p>
+
+    <section class="summary-grid" aria-label="Job status summary">
+        <article class="summary-card summary-total">
+            <span class="summary-label">Total Jobs</span>
+            <strong class="summary-value">@totalJobs</strong>
+        </article>
+        <article class="summary-card summary-error">
+            <span class="summary-label">Errors</span>
+            <strong class="summary-value">@errorJobs</strong>
+        </article>
+        <article class="summary-card summary-blocked">
+            <span class="summary-label">Blocked</span>
+            <strong class="summary-value">@blockedJobs</strong>
+        </article>
+        <article class="summary-card summary-stale">
+            <span class="summary-label">Stale</span>
+            <strong class="summary-value">@staleJobs</strong>
+        </article>
+        <article class="summary-card summary-warning">
+            <span class="summary-label">Warnings</span>
+            <strong class="summary-value">@warningJobs</strong>
+        </article>
+        <article class="summary-card summary-success">
+            <span class="summary-label">Success</span>
+            <strong class="summary-value">@successJobs</strong>
+        </article>
+        <article class="summary-card summary-unknown">
+            <span class="summary-label">Unknown</span>
+            <strong class="summary-value">@unknownJobs</strong>
+        </article>
+    </section>
 
     <div class="table-wrap">
     <table>
