@@ -6,6 +6,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<JobConfigService>();
 builder.Services.AddSingleton<JobStatusService>();
 builder.Services.AddSingleton<JobHealthEvaluator>();
+builder.Services.AddSingleton<JobDashboardService>();
 
 var app = builder.Build();
 

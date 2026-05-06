@@ -1,0 +1,100 @@
+@page "{id}"
+@model HomelabAutomationCenter.Pages.Jobs.DetailsModel
+@{
+    var job = Model.Job!;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="@Model.AutoRefreshSeconds" />
+    <title>@job.Name - Homelab Automation Center</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container detail-container">
+    <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
+    <h1>@job.Name</h1>
+    <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
+
+    <section class="detail-card" aria-label="Job status details">
+        <div class="detail-header">
+            <div>
+                <span class="detail-label">Final Status</span>
+                <span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span>
+            </div>
+            <p>@job.Reason</p>
+        </div>
+
+        <dl class="detail-grid">
+            <dt>ID</dt>
+            <dd>@job.Id</dd>
+
+            <dt>Name</dt>
+            <dd>@job.Name</dd>
+
+            <dt>Final Status</dt>
+            <dd><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></dd>
+
+            <dt>Reason</dt>
+            <dd>@job.Reason</dd>
+
+            <dt>Raw Status</dt>
+            <dd>@job.RawStatus</dd>
+
+            <dt>Last Run (UTC)</dt>
+            <dd>@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</dd>
+
+            <dt>Runtime</dt>
+            <dd>@job.Runtime</dd>
+
+            <dt>Message</dt>
+            <dd>@(string.IsNullOrWhiteSpace(job.Message) ? "-" : job.Message)</dd>
+
+            <dt>Warnings</dt>
+            <dd>@job.Warnings</dd>
+
+            <dt>Errors</dt>
+            <dd>@job.Errors</dd>
+
+            <dt>Stale</dt>
+            <dd>@(job.IsStale ? "yes" : "no")</dd>
+
+            <dt>File Found</dt>
+            <dd>@(job.FileFound ? "yes" : "no")</dd>
+
+            <dt>Status Path</dt>
+            <dd>@(string.IsNullOrWhiteSpace(job.StatusPath) ? "-" : job.StatusPath)</dd>
+
+            <dt>Depends On</dt>
+            <dd>
+                @if (job.DependsOn.Count == 0)
+                {
+                    <span>-</span>
+                }
+                else
+                {
+                    <ul class="inline-list">
+                        @foreach (var dependency in job.DependsOn)
+                        {
+                            <li>@dependency</li>
+                        }
+                    </ul>
+                }
+            </dd>
+        </dl>
+    </section>
+
+    <section class="placeholder-card" aria-label="Status history placeholder">
+        <h2>Status history</h2>
+        <p>History and timeline views are planned for a future release. This dashboard does not persist status history yet; it only reads the current JSON status files.</p>
+    </section>
+
+    <section class="placeholder-card" aria-label="Future action hooks">
+        <h2>Future hooks</h2>
+        <p>Manual run buttons and ntfy notifications are intentionally not active yet. Future config fields can describe these behaviors without this version executing commands or sending outbound HTTP calls.</p>
+    </section>
+</main>
+</body>
+</html>

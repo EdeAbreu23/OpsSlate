@@ -100,7 +100,9 @@ public sealed class JobHealthEvaluator
             Warnings = status?.Warnings ?? 0,
             Errors = status?.Errors ?? 0,
             IsStale = isStale,
-            FileFound = fileFound
+            FileFound = fileFound,
+            StatusPath = job.StatusPath,
+            DependsOn = job.DependsOn
         };
     }
 }

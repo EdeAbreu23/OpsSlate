@@ -7,6 +7,8 @@ Simple self-hostable dashboard for homelab job health status.
 - ASP.NET Core Razor Pages (.NET 8)
 - Reads jobs from `/config/jobs.yml` with YamlDotNet
 - Reads each job's JSON status file from configured `status_path`
+- Dashboard auto-refreshes every 60 seconds
+- Simple per-job detail page with current status, config path, and dependency details
 - Final status precedence:
   1. missing status file = `UNKNOWN`
   2. invalid JSON = `UNKNOWN`
@@ -59,9 +61,30 @@ jobs:
     stale_after_minutes: 180
     depends_on:
       - health_check
+    # Future notification preparation only; not sent by this release.
+    # notify_on_error: true
+    # notify_on_warning: false
+    # notify_on_stale: true
+    # Future manual run preparation only; commands are not executed by this release.
+    # manual_run_enabled: false
+    # run_command: /scripts/backup_nas.sh
 ```
 
 Jobs may include an optional `depends_on` list. Dependency checks run after each job status is evaluated normally. If any listed dependency is missing or has a final status other than `SUCCESS`, the dependent job receives final status `BLOCKED` with a reason such as `Blocked by health_check` or `Blocked by health_check, recyclarr`.
+
+## Current UI capabilities
+
+- The dashboard uses a simple meta refresh and reloads every 60 seconds.
+- Each dashboard row links to a detail page showing ID, name, final status, reason, raw status, last run, runtime, message, warnings, errors, stale state, file found state, configured status path, and `depends_on` values.
+- Detail pages include a placeholder for future history/timeline support. No database or persistence is implemented yet.
+
+## Future ntfy notification preparation
+
+This release does **not** send notifications or make outbound HTTP calls. Future configs may use fields such as `notify_on_error`, `notify_on_warning`, and `notify_on_stale` to decide when ntfy messages should be sent. These fields are documentation placeholders only today.
+
+## Future manual run preparation
+
+This release does **not** execute scripts, schedule jobs, or provide manual run buttons. Future configs may use fields such as `manual_run_enabled` and `run_command` to describe safe manual execution behavior. These fields are documentation placeholders only today.
 
 ## Status JSON example
 

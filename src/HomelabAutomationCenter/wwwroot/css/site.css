@@ -240,3 +240,137 @@ tbody tr:last-child td {
 .status-unknown td:first-child {
   padding-left: 0.5rem;
 }
+
+.refresh-note {
+  display: inline-block;
+  margin: 0.25rem 0 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  background: rgba(15, 23, 42, 0.72);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+}
+
+.details-link,
+.back-link {
+  color: #7dd3fc;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.details-link:hover,
+.back-link:hover {
+  color: #bae6fd;
+  text-decoration: underline;
+}
+
+.detail-container {
+  max-width: 1100px;
+}
+
+.detail-card,
+.placeholder-card {
+  margin-top: 1rem;
+  border: 1px solid #243247;
+  border-radius: 0.85rem;
+  background: rgba(17, 28, 49, 0.92);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.35);
+}
+
+.detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #243247;
+  padding: 1rem;
+}
+
+.detail-header p {
+  margin: 0;
+}
+
+.detail-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) 1fr;
+  margin: 0;
+}
+
+.detail-grid dt,
+.detail-grid dd {
+  border-bottom: 1px solid #243247;
+  padding: 0.85rem 1rem;
+}
+
+.detail-grid dt {
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.detail-grid dd {
+  margin: 0;
+  color: #f8fafc;
+  overflow-wrap: anywhere;
+}
+
+.detail-grid dt:last-of-type,
+.detail-grid dd:last-of-type {
+  border-bottom: 0;
+}
+
+.inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inline-list li {
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  background: rgba(14, 116, 144, 0.18);
+}
+
+.placeholder-card {
+  padding: 1rem;
+}
+
+.placeholder-card h2 {
+  margin: 0 0 0.4rem;
+  color: #f8fafc;
+  font-size: 1.2rem;
+}
+
+.placeholder-card p {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-grid dt {
+    border-bottom: 0;
+    padding-bottom: 0.25rem;
+  }
+
+  .detail-grid dd {
+    padding-top: 0.25rem;
+  }
+}
