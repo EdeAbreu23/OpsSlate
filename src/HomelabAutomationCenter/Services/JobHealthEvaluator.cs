@@ -85,6 +85,34 @@ public sealed class JobHealthEvaluator
         return $"Last run {ago} ago (threshold {staleAfterMinutes}m)";
     }
 
+    private static string FormatLastRunAge(DateTimeOffset? lastRun)
+    {
+        if (lastRun is null)
+        {
+            return "Never";
+        }
+
+        var elapsed = DateTimeOffset.UtcNow - lastRun.Value;
+        if (elapsed < TimeSpan.FromMinutes(1))
+        {
+            return "Just now";
+        }
+
+        var days = (int)elapsed.TotalDays;
+        if (days > 0)
+        {
+            return $"{days}d {elapsed.Hours}h ago";
+        }
+
+        var hours = (int)elapsed.TotalHours;
+        if (hours > 0)
+        {
+            return $"{hours}h {elapsed.Minutes}m ago";
+        }
+
+        return $"{elapsed.Minutes}m ago";
+    }
+
     private static JobViewModel Base(JobConfig job, string finalStatus, string reason, string rawStatus, bool isStale, bool fileFound, JobStatus? status)
     {
         return new JobViewModel
@@ -95,6 +123,7 @@ public sealed class JobHealthEvaluator
             Reason = reason,
             RawStatus = rawStatus,
             LastRun = status?.LastRun,
+            LastRunAge = FormatLastRunAge(status?.LastRun),
             Runtime = status?.Runtime ?? "-",
             Message = status?.Message ?? "",
             Warnings = status?.Warnings ?? 0,

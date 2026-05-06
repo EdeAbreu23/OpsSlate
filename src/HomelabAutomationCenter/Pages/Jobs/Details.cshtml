@@ -16,7 +16,10 @@
 <main class="container detail-container">
     <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
     <h1>@job.Name</h1>
-    <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
+    <div class="refresh-actions">
+        <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
+        <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Now</a>
+    </div>
 
     <section class="detail-card" aria-label="Job status details">
         <div class="detail-header">
@@ -45,6 +48,9 @@
 
             <dt>Last Run (UTC)</dt>
             <dd>@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</dd>
+
+            <dt>Last Run Age</dt>
+            <dd>@job.LastRunAge</dd>
 
             <dt>Runtime</dt>
             <dd>@job.Runtime</dd>
