@@ -9,19 +9,21 @@
 body {
   font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
   margin: 0;
-  background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #13213a 0%, #0b1220 38%, #070d19 100%);
   color: #e2e8f0;
 }
 
 .container {
-  max-width: min(1600px, 92vw);
-  margin: 1.5rem auto 0.75rem;
-  padding: 0 1.25rem 0.75rem;
+  width: min(1680px, 94vw);
+  margin: 2rem auto;
+  padding: 0 1.25rem 1.25rem;
 }
 
 h1 {
-  margin-bottom: 0.4rem;
+  margin: 0 0 0.4rem;
   color: #f8fafc;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
 }
 
 p {
@@ -31,15 +33,15 @@ p {
 
 .table-wrap {
   border: 1px solid #243247;
-  border-radius: 0.75rem;
+  border-radius: 0.85rem;
   overflow-x: auto;
-  background: #111c31;
-  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.45);
+  background: rgba(17, 28, 49, 0.92);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.5);
 }
 
 table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 1120px;
   border-collapse: separate;
   border-spacing: 0;
   background: transparent;
@@ -47,10 +49,11 @@ table {
 
 th,
 td {
-  padding: 0.72rem 1rem;
+  padding: 0.8rem 1rem;
   border-bottom: 1px solid #243247;
   text-align: left;
   vertical-align: top;
+  line-height: 1.35;
 }
 
 th {
@@ -61,7 +64,7 @@ th {
   color: #e5e7eb;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
 }
 
 tbody tr {
@@ -98,17 +101,17 @@ tbody tr:last-child td {
 
 .status-error {
   border-left: 4px solid #f87171;
-  background: rgba(248, 113, 113, 0.06);
+  background: rgba(248, 113, 113, 0.08);
 }
 
 .status-stale {
   border-left: 4px solid #a78bfa;
-  background: rgba(167, 139, 250, 0.06);
+  background: rgba(167, 139, 250, 0.07);
 }
 
 .status-warning {
   border-left: 4px solid #fbbf24;
-  background: rgba(251, 191, 36, 0.05);
+  background: rgba(251, 191, 36, 0.06);
 }
 
 .status-success {
@@ -118,7 +121,7 @@ tbody tr:last-child td {
 
 .status-unknown {
   border-left: 4px solid #94a3b8;
-  background: rgba(148, 163, 184, 0.05);
+  background: rgba(148, 163, 184, 0.06);
 }
 
 .status-error td:first-child,
