@@ -48,7 +48,12 @@ public sealed class JobConfigService
                     Id = j.Id.Trim(),
                     Name = j.Name.Trim(),
                     StatusPath = j.StatusPath.Trim(),
-                    StaleAfterMinutes = j.StaleAfterMinutes <= 0 ? 60 : j.StaleAfterMinutes
+                    StaleAfterMinutes = j.StaleAfterMinutes <= 0 ? 60 : j.StaleAfterMinutes,
+                    DependsOn = (j.DependsOn ?? [])
+                        .Where(d => !string.IsNullOrWhiteSpace(d))
+                        .Select(d => d.Trim())
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToList()
                 })
                 .ToList();
         }

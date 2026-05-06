@@ -14,6 +14,7 @@ Simple self-hostable dashboard for homelab job health status.
   4. stale = `STALE`
   5. warnings > 0 or raw status `warning` = `WARNING`
   6. otherwise `SUCCESS`
+  7. dependency check: if any configured `depends_on` job is not `SUCCESS`, the dependent job is shown as `BLOCKED`
 
 ## Local run
 
@@ -52,7 +53,15 @@ jobs:
     name: Health Check
     status_path: /status/health_check/status.json
     stale_after_minutes: 60
+  - id: backup_nas
+    name: NAS Backup
+    status_path: /status/backup_nas/status.json
+    stale_after_minutes: 180
+    depends_on:
+      - health_check
 ```
+
+Jobs may include an optional `depends_on` list. Dependency checks run after each job status is evaluated normally. If any listed dependency is missing or has a final status other than `SUCCESS`, the dependent job receives final status `BLOCKED` with a reason such as `Blocked by health_check` or `Blocked by health_check, recyclarr`.
 
 ## Status JSON example
 
