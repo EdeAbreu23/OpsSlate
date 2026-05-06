@@ -115,6 +115,7 @@ public sealed class JobDashboardService
             Reason = reason,
             RawStatus = job.RawStatus,
             LastRun = job.LastRun,
+            LastRunAge = job.LastRunAge,
             Runtime = job.Runtime,
             Message = job.Message,
             Warnings = job.Warnings,

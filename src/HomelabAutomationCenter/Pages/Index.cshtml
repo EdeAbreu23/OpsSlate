@@ -22,7 +22,10 @@
 <main class="container">
     <h1>Homelab Automation Center</h1>
     <p>Dashboard overview of configured job health.</p>
-    <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
+    <div class="refresh-actions">
+        <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
+        <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Now</a>
+    </div>
 
     <section class="summary-grid" aria-label="Job status summary">
         <article class="summary-card summary-total">
@@ -66,6 +69,7 @@
             <th>Reason</th>
             <th>Raw Status</th>
             <th>Last Run (UTC)</th>
+            <th>Last Run Age</th>
             <th>Runtime</th>
             <th>Message</th>
             <th>Warnings</th>
@@ -78,7 +82,7 @@
         @if (!Model.Jobs.Any())
         {
             <tr>
-                <td colspan="13">No jobs found. Check /config/jobs.yml.</td>
+                <td colspan="14">No jobs found. Check /config/jobs.yml.</td>
             </tr>
         }
         else
@@ -93,6 +97,7 @@
                     <td>@job.Reason</td>
                     <td>@job.RawStatus</td>
                     <td>@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</td>
+                    <td>@job.LastRunAge</td>
                     <td>@job.Runtime</td>
                     <td>@job.Message</td>
                     <td>@job.Warnings</td>

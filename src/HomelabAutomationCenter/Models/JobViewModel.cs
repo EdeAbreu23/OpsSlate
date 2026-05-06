@@ -8,6 +8,7 @@ public sealed class JobViewModel
     public string Reason { get; init; } = "Status file missing";
     public string RawStatus { get; init; } = "unknown";
     public DateTimeOffset? LastRun { get; init; }
+    public string LastRunAge { get; init; } = "Never";
     public string Runtime { get; init; } = "-";
     public string Message { get; init; } = "";
     public int Warnings { get; init; }
