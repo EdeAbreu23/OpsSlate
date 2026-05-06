@@ -58,9 +58,13 @@ public sealed class IndexModel : PageModel
             .GroupBy(j => j.Id, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
 
+        // Safety limit prevents cyclic dependency relationships from causing endless re-evaluation.
+        var maxIterations = evaluatedJobs.Count * 2;
+        var iterations = 0;
         var changed = true;
-        while (changed)
+        while (changed && iterations < maxIterations)
         {
+            iterations++;
             changed = false;
 
             for (var i = 0; i < evaluatedJobs.Count; i++)
