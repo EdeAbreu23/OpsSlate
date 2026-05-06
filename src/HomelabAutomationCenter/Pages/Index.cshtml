@@ -14,6 +14,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="@Model.AutoRefreshSeconds" />
     <title>Homelab Automation Center</title>
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -21,6 +22,7 @@
 <main class="container">
     <h1>Homelab Automation Center</h1>
     <p>Dashboard overview of configured job health.</p>
+    <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
 
     <section class="summary-grid" aria-label="Job status summary">
         <article class="summary-card summary-total">
@@ -59,6 +61,7 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Details</th>
             <th>Final Status</th>
             <th>Reason</th>
             <th>Raw Status</th>
@@ -75,7 +78,7 @@
         @if (!Model.Jobs.Any())
         {
             <tr>
-                <td colspan="12">No jobs found. Check /config/jobs.yml.</td>
+                <td colspan="13">No jobs found. Check /config/jobs.yml.</td>
             </tr>
         }
         else
@@ -85,6 +88,7 @@
                 <tr class="status-@job.FinalStatus.ToLowerInvariant()">
                     <td>@job.Id</td>
                     <td>@job.Name</td>
+                    <td><a class="details-link" asp-page="/Jobs/Details" asp-route-id="@job.Id">View</a></td>
                     <td><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></td>
                     <td>@job.Reason</td>
                     <td>@job.RawStatus</td>

@@ -9,3 +9,10 @@ jobs:
     stale_after_minutes: 180
     depends_on:
       - health_check
+    # Future ntfy notification preparation only; not sent by this release.
+    # notify_on_error: true
+    # notify_on_warning: false
+    # notify_on_stale: true
+    # Future manual run preparation only; commands are not executed by this release.
+    # manual_run_enabled: false
+    # run_command: /scripts/backup_nas.sh
