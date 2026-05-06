@@ -7,3 +7,5 @@ jobs:
     name: NAS Backup
     status_path: /status/backup_nas/status.json
     stale_after_minutes: 180
+    depends_on:
+      - health_check

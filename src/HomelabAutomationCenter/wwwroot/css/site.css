@@ -96,12 +96,18 @@ tbody tr:last-child td {
 .badge.success { background: #15803d; }
 .badge.warning { background: #b45309; }
 .badge.error { background: #b91c1c; }
+.badge.blocked { background: #0e7490; }
 .badge.stale { background: #6d28d9; }
 .badge.unknown { background: #475569; }
 
 .status-error {
   border-left: 4px solid #f87171;
   background: rgba(248, 113, 113, 0.08);
+}
+
+.status-blocked {
+  border-left: 4px solid #22d3ee;
+  background: rgba(34, 211, 238, 0.07);
 }
 
 .status-stale {
@@ -125,6 +131,7 @@ tbody tr:last-child td {
 }
 
 .status-error td:first-child,
+.status-blocked td:first-child,
 .status-stale td:first-child,
 .status-warning td:first-child,
 .status-success td:first-child,
