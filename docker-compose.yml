@@ -10,3 +10,10 @@ services:
       - /mnt/user/appdata/homelab-automation-center/config:/config
       - /mnt/user/appdata/homelab-automation-center/status:/status
     restart: unless-stopped
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    external: true
+    name: ${HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK:-media_network}

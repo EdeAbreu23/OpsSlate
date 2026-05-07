@@ -43,6 +43,29 @@ docker run --rm -p 8080:8080 \
 docker compose up --build -d
 ```
 
+The Compose deployment publishes the app on host port `8099` and attaches the container to an existing external Docker network. By default, Homelab Automation Center joins `media_network`, which is useful on Unraid when shared services and monitoring containers already use that network.
+
+If your shared Docker network has a different name, set `HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK` before deploying. Example `.env`:
+
+```env
+HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK=media_network
+```
+
+Deploy notes after changing networks:
+
+```bash
+docker compose down
+docker compose up --build -d
+```
+
+If the old Compose-created default network remains unused, it can be removed:
+
+```bash
+docker network rm homelab-automation-center_default
+```
+
+If Docker reports that the network is still in use, inspect the containers attached to it before removing the network.
+
 Mounts:
 - `/config:/config`
 - `/status:/status`
