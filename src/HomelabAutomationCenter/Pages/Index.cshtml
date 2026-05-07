@@ -25,6 +25,7 @@
     <div class="refresh-actions">
         <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
         <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Now</a>
+        <a class="dashboard-link" asp-page="/System/Validation">System Validation</a>
     </div>
 
     <section class="summary-grid" aria-label="Job status summary">

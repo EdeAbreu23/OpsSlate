@@ -1,0 +1,85 @@
+@page
+@using HomelabAutomationCenter.Models
+@model HomelabAutomationCenter.Pages.System.ValidationModel
+@{
+    static string StatusClass(ValidationStatus status) => status switch
+    {
+        ValidationStatus.Pass => "pass",
+        ValidationStatus.Warning => "warning",
+        ValidationStatus.Error => "error",
+        _ => "unknown"
+    };
+
+    static string StatusText(ValidationStatus status) => status switch
+    {
+        ValidationStatus.Pass => "PASS",
+        ValidationStatus.Warning => "WARNING",
+        ValidationStatus.Error => "ERROR",
+        _ => "UNKNOWN"
+    };
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Validation - Homelab Automation Center</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container validation-container">
+    <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
+    <h1>System Validation</h1>
+    <p>Checks dashboard configuration and mounted status files without changing job execution behavior.</p>
+    <div class="refresh-actions">
+        <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Validation</a>
+    </div>
+
+    <section class="summary-grid" aria-label="Validation summary">
+        <article class="summary-card summary-total">
+            <span class="summary-label">Total Checks</span>
+            <strong class="summary-value">@Model.TotalChecks</strong>
+        </article>
+        <article class="summary-card summary-error">
+            <span class="summary-label">Errors</span>
+            <strong class="summary-value">@Model.ErrorCount</strong>
+        </article>
+        <article class="summary-card summary-warning">
+            <span class="summary-label">Warnings</span>
+            <strong class="summary-value">@Model.WarningCount</strong>
+        </article>
+        <article class="summary-card summary-success">
+            <span class="summary-label">Passed</span>
+            <strong class="summary-value">@Model.PassedCount</strong>
+        </article>
+    </section>
+
+    <section class="validation-results" aria-label="Validation results">
+        @if (!Model.Results.Any())
+        {
+            <article class="validation-card status-unknown">
+                <span class="badge unknown">UNKNOWN</span>
+                <div>
+                    <h2>No checks ran</h2>
+                    <p>No validation results are available.</p>
+                </div>
+            </article>
+        }
+        else
+        {
+            foreach (var result in Model.Results)
+            {
+                var statusClass = StatusClass(result.Status);
+                <article class="validation-card validation-@statusClass status-@statusClass">
+                    <span class="badge @statusClass">@StatusText(result.Status)</span>
+                    <div>
+                        <h2>@result.CheckName</h2>
+                        <p>@result.Details</p>
+                    </div>
+                </article>
+            }
+        }
+    </section>
+</main>
+</body>
+</html>
