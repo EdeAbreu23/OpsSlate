@@ -31,10 +31,14 @@ jobs:
       - name: Test if test projects exist
         shell: bash
         run: |
-          test_project=$(find . -type f \( -name '*Test.csproj' -o -name '*Tests.csproj' \) -print -quit)
+          mapfile -t test_projects < <(find . -type f \( -name '*Test.csproj' -o -name '*Tests.csproj' \) -print)
 
-          if [ -n "$test_project" ]; then
-            dotnet test --configuration Release --no-build
-          else
+          if [ "${#test_projects[@]}" -eq 0 ]; then
             echo "No test projects found; skipping dotnet test."
+            exit 0
           fi
+
+          for test_project in "${test_projects[@]}"; do
+            echo "Running tests for ${test_project}"
+            dotnet test "${test_project}" --configuration Release
+          done
