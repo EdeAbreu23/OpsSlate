@@ -113,11 +113,30 @@ jobs:
 
 Jobs may include an optional `depends_on` list. Dependency checks run after each job status is evaluated normally. If any listed dependency is missing or has a final status other than `SUCCESS`, the dependent job receives final status `BLOCKED` with a reason such as `Blocked by health_check` or `Blocked by health_check, recyclarr`.
 
+
+## Adding jobs from the UI
+
+Use **Add Job** on the dashboard to open `/Jobs/New` and create a job without manually editing `${HAC_CONFIG_PATH}`. The wizard collects a job ID, display name, status path, stale threshold, and optional comma-separated dependency IDs.
+
+On save, Homelab Automation Center backs up the configured jobs file to `<jobs file path>.bak.<timestamp>`, appends the new job to `jobs.yml`, preserves existing job entries and `depends_on` values, creates the status directory when possible, and writes a starter `status.json` if one does not already exist. Absolute `status_path` values are used directly; relative paths still resolve under `${HAC_STATUS_ROOT}`.
+
+The wizard validates that job IDs are required, unique ignoring case, and contain only lowercase letters, numbers, underscores, or dashes. It also requires a job name and status path, enforces a positive `stale_after_minutes` value, and checks that dependencies reference existing jobs, are not duplicated, and do not point back to the new job.
+
 ## Current UI capabilities
 
 - The dashboard uses a simple meta refresh and reloads every 60 seconds.
 - Each dashboard row links to a detail page showing ID, name, final status, reason, raw status, last run, runtime, message, warnings, errors, stale state, file found state, configured status path, and `depends_on` values.
 - Detail pages include a placeholder for future history/timeline support. No database or persistence is implemented yet.
+
+
+## Roadmap notes
+
+Future job-management ideas, not implemented in this release:
+
+- Script Import Assistant
+- Script Inspector / Code Validator
+- Safe Run button
+- Script patch preview
 
 ## Future ntfy notification preparation
 
