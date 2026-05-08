@@ -122,6 +122,17 @@ On save, Homelab Automation Center backs up the configured jobs file to `<jobs f
 
 The wizard validates that job IDs are required, unique ignoring case, and contain only lowercase letters, numbers, underscores, or dashes. It also requires a job name and status path, enforces a positive `stale_after_minutes` value, and checks that dependencies reference existing jobs, are not duplicated, and do not point back to the new job.
 
+
+## Deleting jobs from the UI
+
+Use each dashboard row's **Delete** link or the **Delete Job** link on a job detail page to open `/Jobs/Delete/{id}`. Deletion always uses a confirmation page; the app never deletes a job from a GET request.
+
+The confirmation page shows the job ID, name, resolved status path, final status, current `depends_on` values, jobs that depend on the selected job, and whether the status file currently exists. If any other jobs depend on the selected job, deletion is blocked by default and the dependent jobs are listed. You can force deletion from the confirmation page when you intentionally want to leave those other jobs and their `depends_on` values unchanged.
+
+On delete, Homelab Automation Center backs up the configured jobs file to `<jobs file path>.bak.<timestamp>` before removing the selected job entry. All other job entries and their `depends_on` values are preserved.
+
+Status cleanup is optional. If **Also delete status file/folder** is checked, only the deleted job's resolved status file is removed when it exists. The parent status folder is removed only if it is empty after the file delete; non-empty folders are not recursively deleted. Scripts are never deleted, edited, or executed by the delete workflow.
+
 ## Current UI capabilities
 
 - The dashboard uses a simple meta refresh and reloads every 60 seconds.

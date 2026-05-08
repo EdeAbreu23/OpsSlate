@@ -578,3 +578,86 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+.delete-link,
+.danger-button {
+  display: inline-block;
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  background: rgba(127, 29, 29, 0.28);
+  color: #fecaca;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.delete-link:hover,
+.danger-button:hover {
+  color: #fee2e2;
+  text-decoration: underline;
+}
+
+.delete-link-pill {
+  padding: 0.35rem 0.75rem;
+}
+
+.danger-button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.delete-card h2 {
+  margin: 0 0 0.35rem;
+  color: #f8fafc;
+  font-size: 1.2rem;
+}
+
+.delete-warning {
+  display: grid;
+  gap: 0.35rem;
+  margin: 1rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: rgba(127, 29, 29, 0.24);
+  color: #fecaca;
+}
+
+.delete-form {
+  border-top: 1px solid #243247;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.checkbox-field input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #dc2626;
+}
+
+.checkbox-note {
+  display: block;
+  margin: 0.35rem 0 0.8rem 1.55rem;
+  color: #94a3b8;
+}
+
+.force-checkbox {
+  margin-top: 0.85rem;
+  color: #fecaca;
+}
+
+.danger-list li {
+  border-color: rgba(248, 113, 113, 0.32);
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecaca;
+}
+
+.warning-card {
+  border-color: rgba(251, 191, 36, 0.35);
+}
