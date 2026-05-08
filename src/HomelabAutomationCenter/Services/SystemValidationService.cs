@@ -295,8 +295,8 @@ public sealed class SystemValidationService
     private static void ValidateStatusJsonSchema(List<ValidationResult> results, JobConfig job, JsonElement root)
     {
         ValidateStatusValue(results, job, root);
-        ValidateOptionalNumber(results, job, root, "warnings", ValidationStatus.Warning);
-        ValidateOptionalNumber(results, job, root, "errors", ValidationStatus.Error);
+        ValidateOptionalNonNegativeInteger(results, job, root, "warnings", ValidationStatus.Warning);
+        ValidateOptionalNonNegativeInteger(results, job, root, "errors", ValidationStatus.Error);
         ValidateOptionalString(results, job, root, "runtime");
         ValidateOptionalString(results, job, root, "message");
     }
@@ -333,7 +333,7 @@ public sealed class SystemValidationService
         Add(results, ValidationStatus.Error, checkName, $"status has unsupported value '{value}'. Expected success, warning, error, unknown, or blank.");
     }
 
-    private static void ValidateOptionalNumber(
+    private static void ValidateOptionalNonNegativeInteger(
         List<ValidationResult> results,
         JobConfig job,
         JsonElement root,
@@ -356,15 +356,21 @@ public sealed class SystemValidationService
         var rawValue = field.GetRawText();
         Add(results, ValidationStatus.Pass, typeCheckName, $"{fieldName} is numeric: {rawValue}.");
 
-        if (!field.TryGetDecimal(out var count))
+        if (!field.TryGetInt32(out var count))
         {
-            Add(results, ValidationStatus.Error, $"{fieldName} reported: {DisplayJob(job)}", $"{fieldName} value could not be read as a decimal number: {rawValue}.");
+            Add(results, ValidationStatus.Error, $"{fieldName} reported: {DisplayJob(job)}", $"{fieldName} value must be a valid integer that matches the dashboard schema: {rawValue}.");
+            return;
+        }
+
+        if (count < 0)
+        {
+            Add(results, ValidationStatus.Error, $"{fieldName} reported: {DisplayJob(job)}", $"{fieldName} value must be non-negative: {rawValue}.");
             return;
         }
 
         if (count > 0)
         {
-            Add(results, nonZeroStatus, $"{fieldName} reported: {DisplayJob(job)}", $"{DisplayJob(job)} reports {rawValue} {fieldName}.");
+            Add(results, nonZeroStatus, $"{fieldName} reported: {DisplayJob(job)}", $"{DisplayJob(job)} reports {count} {fieldName}.");
             return;
         }
 
