@@ -23,10 +23,10 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore src/HomelabAutomationCenter/HomelabAutomationCenter.csproj
+        run: dotnet restore src/OpsSlate/OpsSlate.csproj
 
       - name: Build
-        run: dotnet build src/HomelabAutomationCenter/HomelabAutomationCenter.csproj --configuration Release --no-restore
+        run: dotnet build src/OpsSlate/OpsSlate.csproj --configuration Release --no-restore
 
       - name: Test if test projects exist
         shell: bash
