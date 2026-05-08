@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<JobConfigService>();
 builder.Services.AddSingleton<JobStatusService>();
+builder.Services.AddSingleton<TimeFormatter>();
 builder.Services.AddSingleton<JobHealthEvaluator>();
 builder.Services.AddSingleton<JobDashboardService>();
 builder.Services.AddSingleton<SystemValidationService>();
