@@ -15,13 +15,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="refresh" content="@Model.AutoRefreshSeconds" />
-    <title>Homelab Automation Center</title>
+    <title>OpsSlate</title>
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
 <main class="container">
-    <h1>Homelab Automation Center</h1>
-    <p>Dashboard overview of configured job health.</p>
+    <header class="brand-header">
+        <span class="brand-kicker">Job Health Dashboard</span>
+        <h1>OpsSlate</h1>
+        <p>Dashboard overview of configured job health.</p>
+    </header>
     <div class="refresh-actions">
         <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
         <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Now</a>

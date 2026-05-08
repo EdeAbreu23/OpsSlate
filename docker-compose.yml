@@ -1,17 +1,17 @@
 services:
-  homelab-automation-center:
+  opsslate:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: homelab-automation-center
+    container_name: opsslate
     ports:
       - "8099:8080"
     environment:
       HAC_CONFIG_PATH: ${HAC_CONFIG_PATH:-/config/jobs.yml}
       HAC_STATUS_ROOT: ${HAC_STATUS_ROOT:-/status}
     volumes:
-      - /mnt/user/appdata/homelab-automation-center/config:/config
-      - /mnt/user/appdata/homelab-automation-center/status:/status
+      - /mnt/user/appdata/opsslate/config:/config
+      - /mnt/user/appdata/opsslate/status:/status
     restart: unless-stopped
     networks:
       - app_network
@@ -19,4 +19,4 @@ services:
 networks:
   app_network:
     external: true
-    name: ${HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK:-media_network}
+    name: ${OPSSLATE_DOCKER_NETWORK:-${HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK:-media_network}}
