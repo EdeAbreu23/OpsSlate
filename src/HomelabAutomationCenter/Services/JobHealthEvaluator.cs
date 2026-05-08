@@ -47,10 +47,10 @@ public sealed class JobHealthEvaluator
 
     private static string DetermineFinal(string rawStatus, int errors, int warnings, bool isStale)
     {
-        if (rawStatus == "unknown") return JobFinalStatus.Unknown;
         if (errors > 0 || rawStatus == "error") return JobFinalStatus.Error;
         if (isStale) return JobFinalStatus.Stale;
         if (warnings > 0 || rawStatus == "warning") return JobFinalStatus.Warning;
+        if (rawStatus == "unknown") return JobFinalStatus.Unknown;
         return JobFinalStatus.Success;
     }
 
