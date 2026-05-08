@@ -19,6 +19,7 @@ builder.Services.Configure<HacPathOptions>(options =>
     }
 });
 builder.Services.AddSingleton<JobConfigService>();
+builder.Services.AddSingleton<JobConfigWriterService>();
 builder.Services.AddSingleton<JobStatusService>();
 builder.Services.AddSingleton<TimeFormatter>();
 builder.Services.AddSingleton<JobHealthEvaluator>();

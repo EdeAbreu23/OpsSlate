@@ -50,6 +50,7 @@ public sealed class JobHealthEvaluator
         if (errors > 0 || rawStatus == "error") return JobFinalStatus.Error;
         if (isStale) return JobFinalStatus.Stale;
         if (warnings > 0 || rawStatus == "warning") return JobFinalStatus.Warning;
+        if (rawStatus == "unknown") return JobFinalStatus.Unknown;
         return JobFinalStatus.Success;
     }
 
@@ -82,6 +83,7 @@ public sealed class JobHealthEvaluator
                 _ => "Warning reported"
             },
             JobFinalStatus.Success => "Job completed successfully",
+            JobFinalStatus.Unknown => "Job has not reported status yet",
             _ => "Status file invalid"
         };
     }
