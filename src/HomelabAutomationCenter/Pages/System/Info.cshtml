@@ -1,0 +1,43 @@
+@page
+@model HomelabAutomationCenter.Pages.System.InfoModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Info - Homelab Automation Center</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container detail-container">
+    <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
+    <h1>System Info</h1>
+    <p>Runtime file-system information used by the dashboard. This page only reads configuration and status paths.</p>
+    <div class="refresh-actions">
+        <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Info</a>
+    </div>
+
+    <section class="detail-card" aria-label="App runtime information">
+        <dl class="detail-grid">
+            <dt>Config Path</dt>
+            <dd>@Model.Info.ConfigPath</dd>
+
+            <dt>/config Exists</dt>
+            <dd><span class="badge @(Model.Info.ConfigDirectoryExists ? "success" : "error")">@(Model.Info.ConfigDirectoryExists ? "yes" : "no")</span></dd>
+
+            <dt>/config/jobs.yml Exists</dt>
+            <dd><span class="badge @(Model.Info.JobsConfigExists ? "success" : "error")">@(Model.Info.JobsConfigExists ? "yes" : "no")</span></dd>
+
+            <dt>/status Exists</dt>
+            <dd><span class="badge @(Model.Info.StatusDirectoryExists ? "success" : "warning")">@(Model.Info.StatusDirectoryExists ? "yes" : "no")</span></dd>
+
+            <dt>Configured Jobs</dt>
+            <dd>@Model.Info.ConfiguredJobCount</dd>
+
+            <dt>Status Files Found</dt>
+            <dd>@Model.Info.StatusFileCount</dd>
+        </dl>
+    </section>
+</main>
+</body>
+</html>
