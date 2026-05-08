@@ -8,6 +8,7 @@ builder.Services.AddSingleton<JobStatusService>();
 builder.Services.AddSingleton<JobHealthEvaluator>();
 builder.Services.AddSingleton<JobDashboardService>();
 builder.Services.AddSingleton<SystemValidationService>();
+builder.Services.AddSingleton<SystemInfoService>();
 
 var app = builder.Build();
 
