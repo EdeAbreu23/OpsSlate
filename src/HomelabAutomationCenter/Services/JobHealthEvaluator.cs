@@ -11,21 +11,38 @@ public sealed class JobHealthEvaluator
         _timeFormatter = timeFormatter;
     }
 
-    public JobViewModel Evaluate(JobConfig job, bool fileFound, bool isValidJson, JobStatus? status)
+    public JobViewModel Evaluate(JobConfig job, JobStatusReadResult readResult)
     {
-        if (!fileFound || !isValidJson || status is null)
+        if (!readResult.FileFound || !readResult.IsValidJson || readResult.Status is null)
         {
-            var unknownReason = fileFound ? "Status file invalid" : "Status file missing";
-            return Base(job, JobFinalStatus.Unknown, unknownReason, "unknown", false, fileFound, status);
+            var unknownReason = readResult.FileFound ? "Status file invalid" : "Status file missing";
+            return Base(
+                job,
+                JobFinalStatus.Unknown,
+                unknownReason,
+                "unknown",
+                false,
+                readResult.FileFound,
+                readResult.Status,
+                readResult.ErrorMessage);
         }
 
+        var status = readResult.Status;
         var rawStatus = (status.Status ?? "unknown").Trim().ToLowerInvariant();
         var isStale = IsStale(status.LastRun, job.StaleAfterMinutes);
 
         var finalStatus = DetermineFinal(rawStatus, status.Errors, status.Warnings, isStale);
         var reason = DetermineReason(finalStatus, status.Errors, status.Warnings, status.LastRun, job.StaleAfterMinutes);
 
-        return Base(job, finalStatus, reason, rawStatus, isStale, fileFound, status);
+        return Base(
+            job,
+            finalStatus,
+            reason,
+            rawStatus,
+            isStale,
+            readResult.FileFound,
+            status,
+            readResult.ErrorMessage);
     }
 
     private static string DetermineFinal(string rawStatus, int errors, int warnings, bool isStale)
@@ -69,7 +86,15 @@ public sealed class JobHealthEvaluator
         };
     }
 
-    private JobViewModel Base(JobConfig job, string finalStatus, string reason, string rawStatus, bool isStale, bool fileFound, JobStatus? status)
+    private JobViewModel Base(
+        JobConfig job,
+        string finalStatus,
+        string reason,
+        string rawStatus,
+        bool isStale,
+        bool fileFound,
+        JobStatus? status,
+        string? statusReadErrorMessage)
     {
         return new JobViewModel
         {
@@ -87,6 +112,7 @@ public sealed class JobHealthEvaluator
             IsStale = isStale,
             FileFound = fileFound,
             StatusPath = job.StatusPath,
+            StatusReadErrorMessage = statusReadErrorMessage ?? string.Empty,
             DependsOn = job.DependsOn
         };
     }

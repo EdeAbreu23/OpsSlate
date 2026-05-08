@@ -25,7 +25,7 @@ public sealed class JobDashboardService
             .Select(job =>
             {
                 var read = _jobStatusService.ReadStatus(job.StatusPath);
-                return _jobHealthEvaluator.Evaluate(job, read.fileFound, read.isValidJson, read.status);
+                return _jobHealthEvaluator.Evaluate(job, read);
             })
             .ToList();
 
@@ -123,6 +123,7 @@ public sealed class JobDashboardService
             IsStale = job.IsStale,
             FileFound = job.FileFound,
             StatusPath = job.StatusPath,
+            StatusReadErrorMessage = job.StatusReadErrorMessage,
             DependsOn = job.DependsOn
         };
     }

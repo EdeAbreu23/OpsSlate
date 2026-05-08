@@ -262,7 +262,7 @@ public sealed class SystemValidationService
             }
             catch (Exception ex)
             {
-                Add(results, ValidationStatus.Error, $"Status file can be read: {DisplayJob(job)}", $"Could not read {path}: {ex.Message}");
+                Add(results, ValidationStatus.Error, $"Status file can be read: {DisplayJob(job)}", $"Could not read {path}: {Concise(ex.Message)}");
                 continue;
             }
 
@@ -275,6 +275,12 @@ public sealed class SystemValidationService
             try
             {
                 using var document = JsonDocument.Parse(content);
+                if (document.RootElement.ValueKind != JsonValueKind.Object)
+                {
+                    Add(results, ValidationStatus.Error, $"Status file content parses: {DisplayJob(job)}", $"Status file must be a JSON object, but found {document.RootElement.ValueKind.ToString().ToLowerInvariant()}.");
+                    continue;
+                }
+
                 Add(results, ValidationStatus.Pass, $"Status file content parses: {DisplayJob(job)}", "Status file content is valid JSON.");
                 if (document.RootElement.ValueKind != JsonValueKind.Object)
                 {
@@ -287,7 +293,7 @@ public sealed class SystemValidationService
             }
             catch (JsonException ex)
             {
-                Add(results, ValidationStatus.Error, $"Status file content parses: {DisplayJob(job)}", $"Status file contains invalid JSON: {ex.Message}");
+                Add(results, ValidationStatus.Error, $"Status file content parses: {DisplayJob(job)}", $"Status file contains invalid JSON: {Concise(ex.Message)}");
             }
         }
     }
@@ -446,6 +452,11 @@ public sealed class SystemValidationService
         {
             Add(results, ValidationStatus.Pass, checkName, passDetails);
         }
+    }
+
+    private static string Concise(string message)
+    {
+        return string.Join(" ", message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
     }
 
     private static void Add(List<ValidationResult> results, ValidationStatus status, string checkName, string details)
