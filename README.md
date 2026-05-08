@@ -29,9 +29,16 @@ Then open `http://localhost:5087` (or the URL shown in logs).
 
 ## CI
 
-Backend CI runs on pull requests targeting `main` and on pushes to `main`. It validates the ASP.NET Core backend by restoring and building `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
+OpsSlate uses the following repository validation and automation:
 
-The workflow safely checks for test projects before running tests. If no test project exists, CI skips `dotnet test` without failing; once test projects are added, they will run automatically.
+- **Backend CI** runs on pull requests targeting `main` and on pushes to `main`. It validates the ASP.NET Core backend by restoring and building `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
+- **Docker CI** builds the Docker image with `docker build -t opsslate:ci .` on pull requests targeting `main` and on pushes to `main`. It does not publish or push images.
+- **CodeQL** runs GitHub CodeQL analysis for C# on pull requests targeting `main`, pushes to `main`, and a weekly schedule.
+- **Dependabot** checks GitHub Actions, NuGet, and Docker dependencies weekly.
+
+Backend CI safely checks for test projects before running tests. If no test project exists, CI skips `dotnet test` without failing; once test projects are added, they will run automatically.
+
+Frontend CI is intentionally not added yet because this repo does not have a separate frontend project.
 
 ## Docker
 
