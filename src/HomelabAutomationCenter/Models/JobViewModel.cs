@@ -16,5 +16,6 @@ public sealed class JobViewModel
     public bool IsStale { get; init; }
     public bool FileFound { get; init; }
     public string StatusPath { get; init; } = string.Empty;
+    public string StatusReadErrorMessage { get; init; } = string.Empty;
     public IReadOnlyList<string> DependsOn { get; init; } = [];
 }

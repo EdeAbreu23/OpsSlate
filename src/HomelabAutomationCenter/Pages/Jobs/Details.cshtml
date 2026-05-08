@@ -73,6 +73,9 @@
             <dt>Status Path</dt>
             <dd>@(string.IsNullOrWhiteSpace(job.StatusPath) ? "-" : job.StatusPath)</dd>
 
+            <dt>Status Read Error</dt>
+            <dd>@(string.IsNullOrWhiteSpace(job.StatusReadErrorMessage) ? "-" : job.StatusReadErrorMessage)</dd>
+
             <dt>Depends On</dt>
             <dd>
                 @if (job.DependsOn.Count == 0)
