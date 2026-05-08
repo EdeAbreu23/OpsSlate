@@ -1,5 +1,7 @@
 using System.Text.Json;
 using HomelabAutomationCenter.Models;
+using HomelabAutomationCenter.Options;
+using Microsoft.Extensions.Options;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -7,7 +9,12 @@ namespace HomelabAutomationCenter.Services;
 
 public sealed class SystemValidationService
 {
-    private const string ConfigPath = "/config/jobs.yml";
+    private readonly HacPathOptions _pathOptions;
+
+    public SystemValidationService(IOptions<HacPathOptions> pathOptions)
+    {
+        _pathOptions = pathOptions.Value;
+    }
 
     private sealed class JobsFile
     {
@@ -18,18 +25,18 @@ public sealed class SystemValidationService
     {
         var results = new List<ValidationResult>();
 
-        if (!File.Exists(ConfigPath))
+        if (!File.Exists(_pathOptions.ConfigPath))
         {
-            Add(results, ValidationStatus.Error, "jobs.yml exists", $"{ConfigPath} was not found.");
+            Add(results, ValidationStatus.Error, "jobs.yml exists", $"{_pathOptions.ConfigPath} was not found.");
             return results;
         }
 
-        Add(results, ValidationStatus.Pass, "jobs.yml exists", $"{ConfigPath} was found.");
+        Add(results, ValidationStatus.Pass, "jobs.yml exists", $"{_pathOptions.ConfigPath} was found.");
 
         JobsFile? jobsFile;
         try
         {
-            var yaml = File.ReadAllText(ConfigPath);
+            var yaml = File.ReadAllText(_pathOptions.ConfigPath);
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .IgnoreUnmatchedProperties()
@@ -242,11 +249,11 @@ public sealed class SystemValidationService
         }
     }
 
-    private static void ValidateStatusFiles(List<ValidationResult> results, IReadOnlyList<JobConfig> jobs)
+    private void ValidateStatusFiles(List<ValidationResult> results, IReadOnlyList<JobConfig> jobs)
     {
         foreach (var job in jobs.Where(job => !string.IsNullOrWhiteSpace(job.StatusPath)))
         {
-            var path = job.StatusPath.Trim();
+            var path = _pathOptions.ResolveStatusPath(job.StatusPath);
             if (!File.Exists(path))
             {
                 Add(results, ValidationStatus.Warning, $"Status file exists: {DisplayJob(job)}", $"Status file is missing at {path}.");
