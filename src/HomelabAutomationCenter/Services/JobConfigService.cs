@@ -1,4 +1,6 @@
 using HomelabAutomationCenter.Models;
+using HomelabAutomationCenter.Options;
+using Microsoft.Extensions.Options;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -6,7 +8,12 @@ namespace HomelabAutomationCenter.Services;
 
 public sealed class JobConfigService
 {
-    private const string ConfigPath = "/config/jobs.yml";
+    private readonly HacPathOptions _pathOptions;
+
+    public JobConfigService(IOptions<HacPathOptions> pathOptions)
+    {
+        _pathOptions = pathOptions.Value;
+    }
 
     private sealed class JobsFile
     {
@@ -15,12 +22,12 @@ public sealed class JobConfigService
 
     public IReadOnlyList<JobConfig> ReadJobs()
     {
-        if (!File.Exists(ConfigPath))
+        if (!File.Exists(_pathOptions.ConfigPath))
         {
             return [];
         }
 
-        var yaml = File.ReadAllText(ConfigPath);
+        var yaml = File.ReadAllText(_pathOptions.ConfigPath);
         if (string.IsNullOrWhiteSpace(yaml))
         {
             return [];
@@ -47,7 +54,7 @@ public sealed class JobConfigService
                 {
                     Id = j.Id.Trim(),
                     Name = j.Name.Trim(),
-                    StatusPath = j.StatusPath.Trim(),
+                    StatusPath = _pathOptions.ResolveStatusPath(j.StatusPath),
                     StaleAfterMinutes = j.StaleAfterMinutes <= 0 ? 60 : j.StaleAfterMinutes,
                     DependsOn = (j.DependsOn ?? [])
                         .Where(d => !string.IsNullOrWhiteSpace(d))

@@ -83,7 +83,7 @@
         @if (!Model.Jobs.Any())
         {
             <tr>
-                <td colspan="14">No jobs found. Check /config/jobs.yml.</td>
+                <td colspan="14">No jobs found. Check @Model.ConfigPath.</td>
             </tr>
         }
         else

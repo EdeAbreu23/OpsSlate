@@ -1,8 +1,23 @@
+using HomelabAutomationCenter.Options;
 using HomelabAutomationCenter.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.Configure<HacPathOptions>(options =>
+{
+    var configPath = builder.Configuration["HAC_CONFIG_PATH"];
+    if (!string.IsNullOrWhiteSpace(configPath))
+    {
+        options.ConfigPath = configPath;
+    }
+
+    var statusRoot = builder.Configuration["HAC_STATUS_ROOT"];
+    if (!string.IsNullOrWhiteSpace(statusRoot))
+    {
+        options.StatusRoot = statusRoot;
+    }
+});
 builder.Services.AddSingleton<JobConfigService>();
 builder.Services.AddSingleton<JobStatusService>();
 builder.Services.AddSingleton<JobHealthEvaluator>();

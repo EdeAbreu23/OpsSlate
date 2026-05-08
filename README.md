@@ -5,7 +5,7 @@ Simple self-hostable dashboard for homelab job health status.
 ## Features
 
 - ASP.NET Core Razor Pages (.NET 8)
-- Reads jobs from `/config/jobs.yml` with YamlDotNet
+- Reads jobs from `${HAC_CONFIG_PATH}` (default `/config/jobs.yml`) with YamlDotNet
 - Reads each job's JSON status file from configured `status_path`
 - Dashboard auto-refreshes every 60 seconds
 - Simple per-job detail page with current status, config path, and dependency details
@@ -49,6 +49,8 @@ If your shared Docker network has a different name, set `HOMELAB_AUTOMATION_CENT
 
 ```env
 HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK=media_network
+HAC_CONFIG_PATH=/config/jobs.yml
+HAC_STATUS_ROOT=/status
 ```
 
 Deploy notes after changing networks:
@@ -70,7 +72,23 @@ Mounts:
 - `/config:/config`
 - `/status:/status`
 
-## Config format (`/config/jobs.yml`)
+## Path configuration
+
+Homelab Automation Center supports environment-configurable filesystem paths while keeping Docker defaults unchanged:
+
+| Environment variable | Default | Purpose |
+| --- | --- | --- |
+| `HAC_CONFIG_PATH` | `/config/jobs.yml` | YAML file containing dashboard job definitions. |
+| `HAC_STATUS_ROOT` | `/status` | Root directory used to resolve relative `status_path` values from the jobs config. Absolute `status_path` values continue to be used as-is. |
+
+For the default Docker and Docker Compose mounts, no path environment variables are required. To run with different mount points, set the variables and update your volume mappings accordingly. Example:
+
+```env
+HAC_CONFIG_PATH=/app-config/jobs.yml
+HAC_STATUS_ROOT=/job-status
+```
+
+## Config format (`${HAC_CONFIG_PATH}`; default `/config/jobs.yml`)
 
 ```yaml
 jobs:
