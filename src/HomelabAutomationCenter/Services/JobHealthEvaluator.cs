@@ -16,7 +16,7 @@ public sealed class JobHealthEvaluator
         if (!fileFound || !isValidJson || status is null)
         {
             var unknownReason = fileFound ? "Status file invalid" : "Status file missing";
-            return Base(job, "UNKNOWN", unknownReason, "unknown", false, fileFound, status);
+            return Base(job, JobFinalStatus.Unknown, unknownReason, "unknown", false, fileFound, status);
         }
 
         var rawStatus = (status.Status ?? "unknown").Trim().ToLowerInvariant();
@@ -30,10 +30,10 @@ public sealed class JobHealthEvaluator
 
     private static string DetermineFinal(string rawStatus, int errors, int warnings, bool isStale)
     {
-        if (errors > 0 || rawStatus == "error") return "ERROR";
-        if (isStale) return "STALE";
-        if (warnings > 0 || rawStatus == "warning") return "WARNING";
-        return "SUCCESS";
+        if (errors > 0 || rawStatus == "error") return JobFinalStatus.Error;
+        if (isStale) return JobFinalStatus.Stale;
+        if (warnings > 0 || rawStatus == "warning") return JobFinalStatus.Warning;
+        return JobFinalStatus.Success;
     }
 
     private static bool IsStale(DateTimeOffset? lastRun, int staleAfterMinutes)
@@ -51,20 +51,20 @@ public sealed class JobHealthEvaluator
     {
         return finalStatus switch
         {
-            "ERROR" => errors switch
+            JobFinalStatus.Error => errors switch
             {
                 1 => "1 error reported",
                 > 1 => $"{errors} errors reported",
                 _ => "Error reported"
             },
-            "STALE" => _timeFormatter.FormatStaleReason(lastRun, staleAfterMinutes),
-            "WARNING" => warnings switch
+            JobFinalStatus.Stale => _timeFormatter.FormatStaleReason(lastRun, staleAfterMinutes),
+            JobFinalStatus.Warning => warnings switch
             {
                 1 => "1 warning reported",
                 > 1 => $"{warnings} warnings reported",
                 _ => "Warning reported"
             },
-            "SUCCESS" => "Job completed successfully",
+            JobFinalStatus.Success => "Job completed successfully",
             _ => "Status file invalid"
         };
     }

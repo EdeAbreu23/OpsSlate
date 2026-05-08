@@ -46,11 +46,11 @@ public sealed class JobDashboardService
     {
         return finalStatus switch
         {
-            "ERROR" => 0,
-            "BLOCKED" => 1,
-            "STALE" => 2,
-            "WARNING" => 3,
-            "SUCCESS" => 4,
+            JobFinalStatus.Error => 0,
+            JobFinalStatus.Blocked => 1,
+            JobFinalStatus.Stale => 2,
+            JobFinalStatus.Warning => 3,
+            JobFinalStatus.Success => 4,
             _ => 5
         };
     }
@@ -83,7 +83,7 @@ public sealed class JobDashboardService
 
                 var blockers = config.DependsOn
                     .Where(dependencyId => !statusesById.TryGetValue(dependencyId, out var dependency)
-                        || dependency.FinalStatus != "SUCCESS")
+                        || dependency.FinalStatus != JobFinalStatus.Success)
                     .ToList();
 
                 if (blockers.Count == 0)
@@ -92,7 +92,7 @@ public sealed class JobDashboardService
                 }
 
                 var blockedReason = $"Blocked by {string.Join(", ", blockers)}";
-                if (job.FinalStatus == "BLOCKED" && job.Reason == blockedReason)
+                if (job.FinalStatus == JobFinalStatus.Blocked && job.Reason == blockedReason)
                 {
                     continue;
                 }
@@ -111,7 +111,7 @@ public sealed class JobDashboardService
         {
             Id = job.Id,
             Name = job.Name,
-            FinalStatus = "BLOCKED",
+            FinalStatus = JobFinalStatus.Blocked,
             Reason = reason,
             RawStatus = job.RawStatus,
             LastRun = job.LastRun,
