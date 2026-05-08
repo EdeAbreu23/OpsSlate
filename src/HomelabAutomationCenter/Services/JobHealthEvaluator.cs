@@ -4,6 +4,13 @@ namespace HomelabAutomationCenter.Services;
 
 public sealed class JobHealthEvaluator
 {
+    private readonly TimeFormatter _timeFormatter;
+
+    public JobHealthEvaluator(TimeFormatter timeFormatter)
+    {
+        _timeFormatter = timeFormatter;
+    }
+
     public JobViewModel Evaluate(JobConfig job, bool fileFound, bool isValidJson, JobStatus? status)
     {
         if (!fileFound || !isValidJson || status is null)
@@ -40,7 +47,7 @@ public sealed class JobHealthEvaluator
         return lastRun.Value < threshold;
     }
 
-    private static string DetermineReason(string finalStatus, int errors, int warnings, DateTimeOffset? lastRun, int staleAfterMinutes)
+    private string DetermineReason(string finalStatus, int errors, int warnings, DateTimeOffset? lastRun, int staleAfterMinutes)
     {
         return finalStatus switch
         {
@@ -50,7 +57,7 @@ public sealed class JobHealthEvaluator
                 > 1 => $"{errors} errors reported",
                 _ => "Error reported"
             },
-            "STALE" => FormatStaleReason(lastRun, staleAfterMinutes),
+            "STALE" => _timeFormatter.FormatStaleReason(lastRun, staleAfterMinutes),
             "WARNING" => warnings switch
             {
                 1 => "1 warning reported",
@@ -62,58 +69,7 @@ public sealed class JobHealthEvaluator
         };
     }
 
-    private static string FormatStaleReason(DateTimeOffset? lastRun, int staleAfterMinutes)
-    {
-        if (lastRun is null)
-        {
-            return $"Never ran (threshold {staleAfterMinutes}m)";
-        }
-
-        var elapsed = DateTimeOffset.UtcNow - lastRun.Value;
-        if (elapsed < TimeSpan.Zero)
-        {
-            elapsed = TimeSpan.Zero;
-        }
-
-        var totalHours = (int)elapsed.TotalHours;
-        var minutes = elapsed.Minutes;
-
-        var ago = totalHours > 0
-            ? $"{totalHours}h {minutes}m"
-            : $"{minutes}m";
-
-        return $"Last run {ago} ago (threshold {staleAfterMinutes}m)";
-    }
-
-    private static string FormatLastRunAge(DateTimeOffset? lastRun)
-    {
-        if (lastRun is null)
-        {
-            return "Never";
-        }
-
-        var elapsed = DateTimeOffset.UtcNow - lastRun.Value;
-        if (elapsed < TimeSpan.FromMinutes(1))
-        {
-            return "Just now";
-        }
-
-        var days = (int)elapsed.TotalDays;
-        if (days > 0)
-        {
-            return $"{days}d {elapsed.Hours}h ago";
-        }
-
-        var hours = (int)elapsed.TotalHours;
-        if (hours > 0)
-        {
-            return $"{hours}h {elapsed.Minutes}m ago";
-        }
-
-        return $"{elapsed.Minutes}m ago";
-    }
-
-    private static JobViewModel Base(JobConfig job, string finalStatus, string reason, string rawStatus, bool isStale, bool fileFound, JobStatus? status)
+    private JobViewModel Base(JobConfig job, string finalStatus, string reason, string rawStatus, bool isStale, bool fileFound, JobStatus? status)
     {
         return new JobViewModel
         {
@@ -123,7 +79,7 @@ public sealed class JobHealthEvaluator
             Reason = reason,
             RawStatus = rawStatus,
             LastRun = status?.LastRun,
-            LastRunAge = FormatLastRunAge(status?.LastRun),
+            LastRunAge = _timeFormatter.FormatLastRunAge(status?.LastRun),
             Runtime = status?.Runtime ?? "-",
             Message = status?.Message ?? "",
             Warnings = status?.Warnings ?? 0,
