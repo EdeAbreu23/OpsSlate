@@ -261,13 +261,15 @@ tbody tr:last-child td {
 
 .details-link,
 .back-link,
+.edit-link,
 .refresh-now {
   color: #7dd3fc;
   font-weight: 700;
   text-decoration: none;
 }
 
-.refresh-now {
+.refresh-now,
+.edit-link-pill {
   display: inline-block;
   border: 1px solid rgba(125, 211, 252, 0.35);
   border-radius: 999px;
@@ -277,6 +279,7 @@ tbody tr:last-child td {
 
 .details-link:hover,
 .back-link:hover,
+.edit-link:hover,
 .refresh-now:hover {
   color: #bae6fd;
   text-decoration: underline;
@@ -660,4 +663,13 @@ code {
 
 .warning-card {
   border-color: rgba(251, 191, 36, 0.35);
+}
+
+.edit-warning {
+  margin: 1rem 1rem 0;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: rgba(120, 53, 15, 0.24);
+  color: #fde68a;
 }

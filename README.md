@@ -123,6 +123,15 @@ On save, Homelab Automation Center backs up the configured jobs file to `<jobs f
 The wizard validates that job IDs are required, unique ignoring case, and contain only lowercase letters, numbers, underscores, or dashes. It also requires a job name and status path, enforces a positive `stale_after_minutes` value, and checks that dependencies reference existing jobs, are not duplicated, and do not point back to the new job.
 
 
+## Editing jobs from the UI
+
+Use each dashboard row's **Edit** link or the **Edit Job** link on a job detail page to open `/Jobs/Edit/{id}`. The v1 edit workflow shows the selected job ID as read-only and lets you update the display name, status path, stale threshold, and comma-separated dependency IDs.
+
+On save, Homelab Automation Center backs up `${HAC_CONFIG_PATH}` to `<jobs file path>.bak.<timestamp>`, updates only the selected job, preserves all other jobs and unedited YAML fields, and keeps the existing job order. If the status path changes, the app resolves relative paths under `${HAC_STATUS_ROOT}`, creates the status directory when possible, and writes a starter `status.json` only when the new status file does not already exist. Scripts are never edited or executed by the edit workflow.
+
+The edit form validates that the job name and status path are required, `stale_after_minutes` is greater than zero, dependencies reference existing job IDs, dependencies do not include the job itself, and duplicate dependencies are rejected.
+
+
 ## Deleting jobs from the UI
 
 Use each dashboard row's **Delete** link or the **Delete Job** link on a job detail page to open `/Jobs/Delete/{id}`. Deletion always uses a confirmation page; the app never deletes a job from a GET request.
