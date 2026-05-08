@@ -1,0 +1,106 @@
+@page
+@model OpsSlate.Pages.Jobs.NewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Job - OpsSlate</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container detail-container">
+    <a class="back-link" asp-page="/Index">← Back to dashboard</a>
+    <h1>Add Job</h1>
+    <p>Create a new file-based automation job in <code>@Model.ConfigPath</code>.</p>
+
+    <section class="form-card" aria-labelledby="add-job-heading">
+        <div class="detail-header">
+            <div>
+                <span class="detail-label">Job Onboarding Wizard v1</span>
+                <h2 id="add-job-heading">New job details</h2>
+                <p>Existing jobs are preserved, the jobs file is backed up, and a starter status file is created when possible.</p>
+            </div>
+        </div>
+
+        <form method="post" class="job-form">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-grid">
+                <div class="form-field">
+                    <label asp-for="Input.JobId"></label>
+                    <input asp-for="Input.JobId" autocomplete="off" data-status-root="@Model.StatusRoot" data-default-status-path-target="Input_StatusPath" />
+                    <span asp-validation-for="Input.JobId" class="field-validation"></span>
+                    <small>Use lowercase letters, numbers, underscores, or dashes. Example: <code>backup_nas</code>.</small>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Input.JobName"></label>
+                    <input asp-for="Input.JobName" autocomplete="off" />
+                    <span asp-validation-for="Input.JobName" class="field-validation"></span>
+                </div>
+
+                <div class="form-field form-field-wide">
+                    <label asp-for="Input.StatusPath"></label>
+                    <input asp-for="Input.StatusPath" autocomplete="off" placeholder="@Model.BuildDefaultStatusPath()" />
+                    <span asp-validation-for="Input.StatusPath" class="field-validation"></span>
+                    <small>Absolute paths are used as-is. Relative paths resolve under <code>@Model.StatusRoot</code>.</small>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Input.StaleAfterMinutes"></label>
+                    <input asp-for="Input.StaleAfterMinutes" min="1" type="number" />
+                    <span asp-validation-for="Input.StaleAfterMinutes" class="field-validation"></span>
+                    <small>Defaults to 60 minutes to match the current job config convention.</small>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Input.DependsOn"></label>
+                    <input asp-for="Input.DependsOn" autocomplete="off" placeholder="health_check, backup_nas" />
+                    <span asp-validation-for="Input.DependsOn" class="field-validation"></span>
+                    <small>Optional comma-separated existing job IDs. A job cannot depend on itself.</small>
+                </div>
+            </div>
+
+            @if (Model.ExistingJobs.Count > 0)
+            {
+                <div class="existing-jobs-note">
+                    <span class="detail-label">Existing job IDs</span>
+                    <ul class="inline-list">
+                        @foreach (var job in Model.ExistingJobs)
+                        {
+                            <li>@job.Id</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div class="form-actions">
+                <button type="submit" class="primary-button">Save Job</button>
+                <a class="dashboard-link" asp-page="/Index">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script>
+(() => {
+    const idInput = document.querySelector('[data-default-status-path-target]');
+    if (!idInput) return;
+
+    const statusInput = document.getElementById(idInput.dataset.defaultStatusPathTarget);
+    const statusRoot = idInput.dataset.statusRoot || '/status';
+    let lastSuggested = '';
+
+    idInput.addEventListener('input', () => {
+        const jobId = idInput.value.trim();
+        if (!jobId || (statusInput.value && statusInput.value !== lastSuggested)) return;
+
+        const root = statusRoot.replace(/\/+$/, '');
+        lastSuggested = `${root}/${jobId}/status.json`;
+        statusInput.value = lastSuggested;
+    });
+})();
+</script>
+</body>
+</html>

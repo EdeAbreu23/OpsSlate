@@ -21,15 +21,15 @@ Simple self-hostable dashboard for job health status.
 ## Local run
 
 ```bash
-dotnet build src/HomelabAutomationCenter/HomelabAutomationCenter.csproj
-dotnet run --project src/HomelabAutomationCenter/HomelabAutomationCenter.csproj
+dotnet build src/OpsSlate/OpsSlate.csproj
+dotnet run --project src/OpsSlate/OpsSlate.csproj
 ```
 
 Then open `http://localhost:5087` (or the URL shown in logs).
 
 ## CI
 
-Backend CI runs on pull requests targeting `main` and on pushes to `main`. It validates the ASP.NET Core backend by restoring and building `src/HomelabAutomationCenter/HomelabAutomationCenter.csproj` with the .NET 8 SDK.
+Backend CI runs on pull requests targeting `main` and on pushes to `main`. It validates the ASP.NET Core backend by restoring and building `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
 
 The workflow safely checks for test projects before running tests. If no test project exists, CI skips `dotnet test` without failing; once test projects are added, they will run automatically.
 
