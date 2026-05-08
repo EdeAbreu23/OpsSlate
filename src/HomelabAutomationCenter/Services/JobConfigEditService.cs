@@ -1,8 +1,7 @@
 using System.Text.Json;
 using HomelabAutomationCenter.Options;
 using Microsoft.Extensions.Options;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.RepresentationModel;
 
 namespace HomelabAutomationCenter.Services;
 
@@ -19,20 +18,6 @@ public sealed class JobConfigEditService
     public JobConfigEditService(IOptions<HacPathOptions> pathOptions)
     {
         _pathOptions = pathOptions.Value;
-    }
-
-    private sealed class JobsFile
-    {
-        public List<EditableJobConfig> Jobs { get; set; } = [];
-    }
-
-    private sealed class EditableJobConfig
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string StatusPath { get; set; } = string.Empty;
-        public int StaleAfterMinutes { get; set; } = 60;
-        public List<string>? DependsOn { get; set; }
     }
 
     private sealed class StarterStatus
@@ -52,19 +37,19 @@ public sealed class JobConfigEditService
             return null;
         }
 
-        var jobsFile = ReadJobsFile();
-        var job = jobsFile.Jobs.FirstOrDefault(job => string.Equals(job.Id, jobId.Trim(), StringComparison.OrdinalIgnoreCase));
+        var jobsSequence = ReadJobsSequence();
+        var job = FindJob(jobsSequence, jobId.Trim());
         if (job is null)
         {
             return null;
         }
 
         return new EditableJob(
-            job.Id,
-            job.Name,
-            job.StatusPath,
-            job.StaleAfterMinutes <= 0 ? 60 : job.StaleAfterMinutes,
-            job.DependsOn?.Where(dependency => !string.IsNullOrWhiteSpace(dependency)).Select(dependency => dependency.Trim()).ToList() ?? []);
+            GetScalarValue(job, "id"),
+            GetScalarValue(job, "name"),
+            GetScalarValue(job, "status_path"),
+            GetPositiveIntValue(job, "stale_after_minutes", 60),
+            GetStringSequenceValues(job, "depends_on"));
     }
 
     public EditJobConfigResult UpdateJob(EditableJob editedJob)
@@ -74,33 +59,30 @@ public sealed class JobConfigEditService
             return EditJobConfigResult.Failure("Job ID is required.");
         }
 
-        JobsFile jobsFile;
+        YamlStream yamlStream;
+        YamlSequenceNode jobsSequence;
         try
         {
-            jobsFile = ReadJobsFile();
+            (yamlStream, jobsSequence) = ReadJobsDocument();
         }
         catch (Exception ex)
         {
             return EditJobConfigResult.Failure($"Could not read jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
         }
 
-        var jobIndex = jobsFile.Jobs.FindIndex(job => string.Equals(job.Id, editedJob.Id.Trim(), StringComparison.OrdinalIgnoreCase));
-        if (jobIndex < 0)
+        var job = FindJob(jobsSequence, editedJob.Id.Trim());
+        if (job is null)
         {
             return EditJobConfigResult.Failure($"Job '{editedJob.Id.Trim()}' does not exist.");
         }
 
-        var originalStatusPath = jobsFile.Jobs[jobIndex].StatusPath;
-        jobsFile.Jobs[jobIndex] = new EditableJobConfig
-        {
-            Id = jobsFile.Jobs[jobIndex].Id,
-            Name = editedJob.Name.Trim(),
-            StatusPath = editedJob.StatusPath.Trim(),
-            StaleAfterMinutes = editedJob.StaleAfterMinutes,
-            DependsOn = editedJob.DependsOn.Count > 0 ? editedJob.DependsOn.Select(dependency => dependency.Trim()).ToList() : null
-        };
+        var originalStatusPath = GetScalarValue(job, "status_path");
+        SetScalarValue(job, "name", editedJob.Name.Trim());
+        SetScalarValue(job, "status_path", editedJob.StatusPath.Trim());
+        SetScalarValue(job, "stale_after_minutes", editedJob.StaleAfterMinutes.ToString());
+        SetDependsOn(job, editedJob.DependsOn);
 
-        var yaml = CreateSerializer().Serialize(jobsFile);
+        var yaml = SaveYaml(yamlStream);
         var backupPath = BackupPath(_pathOptions.ConfigPath);
         var tempPath = $"{_pathOptions.ConfigPath}.tmp.{DateTimeOffset.UtcNow:yyyyMMddHHmmssfff}";
 
@@ -121,37 +103,155 @@ public sealed class JobConfigEditService
         return EditJobConfigResult.Success(backupPath, statusWarning);
     }
 
-    private JobsFile ReadJobsFile()
+    private YamlSequenceNode ReadJobsSequence()
+    {
+        var (_, jobsSequence) = ReadJobsDocument();
+        return jobsSequence;
+    }
+
+    private (YamlStream YamlStream, YamlSequenceNode JobsSequence) ReadJobsDocument()
     {
         if (!File.Exists(_pathOptions.ConfigPath))
         {
-            return new JobsFile();
+            return CreateEmptyJobsDocument();
         }
 
         var yaml = File.ReadAllText(_pathOptions.ConfigPath);
         if (string.IsNullOrWhiteSpace(yaml))
         {
-            return new JobsFile();
+            return CreateEmptyJobsDocument();
         }
 
-        var jobsFile = CreateDeserializer().Deserialize<JobsFile>(yaml);
-        return new JobsFile
+        var yamlStream = new YamlStream();
+        using var reader = new StringReader(yaml);
+        yamlStream.Load(reader);
+
+        if (yamlStream.Documents.Count == 0)
         {
-            Jobs = jobsFile?.Jobs?
-                .Where(job => !string.IsNullOrWhiteSpace(job.Id))
-                .Select(job => new EditableJobConfig
-                {
-                    Id = job.Id.Trim(),
-                    Name = job.Name.Trim(),
-                    StatusPath = job.StatusPath.Trim(),
-                    StaleAfterMinutes = job.StaleAfterMinutes <= 0 ? 60 : job.StaleAfterMinutes,
-                    DependsOn = job.DependsOn?
-                        .Where(dependency => !string.IsNullOrWhiteSpace(dependency))
-                        .Select(dependency => dependency.Trim())
-                        .ToList()
-                })
-                .ToList() ?? []
-        };
+            return CreateEmptyJobsDocument();
+        }
+
+        if (yamlStream.Documents[0].RootNode is not YamlMappingNode rootNode)
+        {
+            throw new InvalidOperationException("The jobs config root must be a YAML mapping.");
+        }
+
+        var jobsNode = GetChildNode(rootNode, "jobs");
+        if (jobsNode is null)
+        {
+            var jobsSequence = new YamlSequenceNode();
+            rootNode.Children.Add(new YamlScalarNode("jobs"), jobsSequence);
+            return (yamlStream, jobsSequence);
+        }
+
+        if (jobsNode is not YamlSequenceNode existingJobsSequence)
+        {
+            throw new InvalidOperationException("The jobs config 'jobs' value must be a YAML sequence.");
+        }
+
+        return (yamlStream, existingJobsSequence);
+    }
+
+    private static (YamlStream YamlStream, YamlSequenceNode JobsSequence) CreateEmptyJobsDocument()
+    {
+        var jobsSequence = new YamlSequenceNode();
+        var rootNode = new YamlMappingNode();
+        rootNode.Children.Add(new YamlScalarNode("jobs"), jobsSequence);
+        var yamlStream = new YamlStream(new YamlDocument(rootNode));
+        return (yamlStream, jobsSequence);
+    }
+
+    private static YamlMappingNode? FindJob(YamlSequenceNode jobsSequence, string jobId)
+    {
+        return jobsSequence.Children
+            .OfType<YamlMappingNode>()
+            .FirstOrDefault(job => string.Equals(GetScalarValue(job, "id"), jobId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static YamlNode? GetChildNode(YamlMappingNode mappingNode, string key)
+    {
+        return mappingNode.Children.FirstOrDefault(child => IsScalarKey(child.Key, key)).Value;
+    }
+
+    private static string GetScalarValue(YamlMappingNode mappingNode, string key)
+    {
+        return GetChildNode(mappingNode, key) is YamlScalarNode scalarNode
+            ? (scalarNode.Value ?? string.Empty).Trim()
+            : string.Empty;
+    }
+
+    private static int GetPositiveIntValue(YamlMappingNode mappingNode, string key, int defaultValue)
+    {
+        return int.TryParse(GetScalarValue(mappingNode, key), out var value) && value > 0
+            ? value
+            : defaultValue;
+    }
+
+    private static IReadOnlyList<string> GetStringSequenceValues(YamlMappingNode mappingNode, string key)
+    {
+        return GetChildNode(mappingNode, key) is YamlSequenceNode sequenceNode
+            ? sequenceNode.Children
+                .OfType<YamlScalarNode>()
+                .Select(dependency => dependency.Value?.Trim() ?? string.Empty)
+                .Where(dependency => !string.IsNullOrWhiteSpace(dependency))
+                .ToList()
+            : [];
+    }
+
+    private static void SetScalarValue(YamlMappingNode mappingNode, string key, string value)
+    {
+        var existingKey = FindKey(mappingNode, key);
+        if (existingKey is not null)
+        {
+            mappingNode.Children[existingKey] = new YamlScalarNode(value);
+            return;
+        }
+
+        mappingNode.Children.Add(new YamlScalarNode(key), new YamlScalarNode(value));
+    }
+
+    private static void SetDependsOn(YamlMappingNode mappingNode, IReadOnlyList<string> dependencies)
+    {
+        var existingKey = FindKey(mappingNode, "depends_on");
+        if (dependencies.Count == 0)
+        {
+            if (existingKey is not null)
+            {
+                mappingNode.Children.Remove(existingKey);
+            }
+
+            return;
+        }
+
+        var sequenceNode = new YamlSequenceNode();
+        foreach (var dependency in dependencies)
+        {
+            sequenceNode.Children.Add(new YamlScalarNode(dependency.Trim()));
+        }
+        if (existingKey is not null)
+        {
+            mappingNode.Children[existingKey] = sequenceNode;
+            return;
+        }
+
+        mappingNode.Children.Add(new YamlScalarNode("depends_on"), sequenceNode);
+    }
+
+    private static YamlNode? FindKey(YamlMappingNode mappingNode, string key)
+    {
+        return mappingNode.Children.Keys.FirstOrDefault(existingKey => IsScalarKey(existingKey, key));
+    }
+
+    private static bool IsScalarKey(YamlNode node, string key)
+    {
+        return node is YamlScalarNode scalarNode && string.Equals(scalarNode.Value, key, StringComparison.Ordinal);
+    }
+
+    private static string SaveYaml(YamlStream yamlStream)
+    {
+        using var writer = new StringWriter();
+        yamlStream.Save(writer, false);
+        return writer.ToString();
     }
 
     private void WriteYamlWithBackup(string yaml, string backupPath, string tempPath)
@@ -195,22 +295,6 @@ public sealed class JobConfigEditService
         {
             return $"Job was saved, but starter status.json could not be created at {resolvedStatusPath}: {Concise(ex.Message)}";
         }
-    }
-
-    private static ISerializer CreateSerializer()
-    {
-        return new SerializerBuilder()
-            .WithNamingConvention(UnderscoredNamingConvention.Instance)
-            .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
-            .Build();
-    }
-
-    private static IDeserializer CreateDeserializer()
-    {
-        return new DeserializerBuilder()
-            .WithNamingConvention(UnderscoredNamingConvention.Instance)
-            .IgnoreUnmatchedProperties()
-            .Build();
     }
 
     private static string BackupPath(string configPath)
