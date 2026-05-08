@@ -1,0 +1,126 @@
+@page "{id}"
+@model HomelabAutomationCenter.Pages.Jobs.DeleteModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Job - Homelab Automation Center</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container detail-container">
+    <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
+
+    @if (!Model.JobExists)
+    {
+        <section class="placeholder-card warning-card" aria-label="Job not found">
+            <h1>Job not found</h1>
+            <p>The requested job ID does not exist in the configured jobs file.</p>
+            <p><a class="back-link" asp-page="/Index">Return to dashboard</a></p>
+        </section>
+    }
+    else
+    {
+        var job = Model.Job!;
+        var hasDependents = Model.DependentJobs.Count > 0;
+
+        <h1>Delete Job</h1>
+        <p>Review the job below before removing it from the dashboard configuration.</p>
+
+        <section class="detail-card delete-card" aria-label="Delete job confirmation">
+            <div class="detail-header">
+                <div>
+                    <span class="detail-label">Destructive action</span>
+                    <h2>@job.Name</h2>
+                    <p>Deleting this job removes only its entry from <code>jobs.yml</code>. Scripts are never deleted or executed.</p>
+                </div>
+                <span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span>
+            </div>
+
+            <dl class="detail-grid">
+                <dt>Job ID</dt>
+                <dd>@job.Id</dd>
+
+                <dt>Job Name</dt>
+                <dd>@job.Name</dd>
+
+                <dt>Status Path</dt>
+                <dd>@(string.IsNullOrWhiteSpace(job.StatusPath) ? "-" : job.StatusPath)</dd>
+
+                <dt>Final Status</dt>
+                <dd><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></dd>
+
+                <dt>Depends On</dt>
+                <dd>
+                    @if (job.DependsOn.Count == 0)
+                    {
+                        <span>-</span>
+                    }
+                    else
+                    {
+                        <ul class="inline-list">
+                            @foreach (var dependency in job.DependsOn)
+                            {
+                                <li>@dependency</li>
+                            }
+                        </ul>
+                    }
+                </dd>
+
+                <dt>Jobs That Depend On This Job</dt>
+                <dd>
+                    @if (!hasDependents)
+                    {
+                        <span>-</span>
+                    }
+                    else
+                    {
+                        <ul class="inline-list danger-list">
+                            @foreach (var dependentJob in Model.DependentJobs)
+                            {
+                                <li>@dependentJob.Id (@dependentJob.Name)</li>
+                            }
+                        </ul>
+                    }
+                </dd>
+
+                <dt>Status File Exists</dt>
+                <dd>@(Model.StatusFileExists ? "yes" : "no")</dd>
+            </dl>
+
+            <div class="delete-warning">
+                <strong>Warning:</strong> Homelab Automation Center will back up <code>jobs.yml</code> to <code>&lt;jobs file path&gt;.bak.&lt;timestamp&gt;</code> before deleting this job.
+                @if (hasDependents)
+                {
+                    <span>Deletion is blocked by default because other jobs depend on this job.</span>
+                }
+            </div>
+
+            <form method="post" class="job-form delete-form">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <label class="checkbox-field">
+                    <input asp-for="DeleteStatusFile" />
+                    <span>Also delete status file/folder</span>
+                </label>
+                <small class="checkbox-note">Only the resolved status file is deleted. The parent folder is removed only if it is empty afterward; non-empty folders are not recursively deleted.</small>
+
+                @if (hasDependents)
+                {
+                    <label class="checkbox-field force-checkbox">
+                        <input asp-for="ForceDelete" />
+                        <span>Force delete even though other jobs depend on it</span>
+                    </label>
+                }
+
+                <div class="form-actions">
+                    <button class="danger-button" type="submit">Delete Job</button>
+                    <a class="back-link" asp-page="/Jobs/Details" asp-route-id="@job.Id">Cancel</a>
+                </div>
+            </form>
+        </section>
+    }
+</main>
+</body>
+</html>

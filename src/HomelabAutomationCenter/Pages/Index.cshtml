@@ -68,6 +68,7 @@
             <th>ID</th>
             <th>Name</th>
             <th>Details</th>
+            <th>Actions</th>
             <th>Final Status</th>
             <th>Reason</th>
             <th>Raw Status</th>
@@ -85,7 +86,7 @@
         @if (!Model.Jobs.Any())
         {
             <tr>
-                <td colspan="14">No jobs found. Check @Model.ConfigPath.</td>
+                <td colspan="15">No jobs found. Check @Model.ConfigPath.</td>
             </tr>
         }
         else
@@ -96,6 +97,7 @@
                     <td>@job.Id</td>
                     <td>@job.Name</td>
                     <td><a class="details-link" asp-page="/Jobs/Details" asp-route-id="@job.Id">View</a></td>
+                    <td><a class="delete-link" asp-page="/Jobs/Delete" asp-route-id="@job.Id">Delete</a></td>
                     <td><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></td>
                     <td>@job.Reason</td>
                     <td>@job.RawStatus</td>

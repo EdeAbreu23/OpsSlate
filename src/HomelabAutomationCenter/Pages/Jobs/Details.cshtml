@@ -19,6 +19,7 @@
     <div class="refresh-actions">
         <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
         <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Now</a>
+        <a class="delete-link delete-link-pill" asp-page="/Jobs/Delete" asp-route-id="@job.Id">Delete Job</a>
     </div>
 
     <section class="detail-card" aria-label="Job status details">
