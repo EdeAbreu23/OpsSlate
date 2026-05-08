@@ -2,12 +2,12 @@
 @model HomelabAutomationCenter.Pages.IndexModel
 @{
     var totalJobs = Model.Jobs.Count;
-    var errorJobs = Model.Jobs.Count(job => job.FinalStatus == "ERROR");
-    var blockedJobs = Model.Jobs.Count(job => job.FinalStatus == "BLOCKED");
-    var staleJobs = Model.Jobs.Count(job => job.FinalStatus == "STALE");
-    var warningJobs = Model.Jobs.Count(job => job.FinalStatus == "WARNING");
-    var successJobs = Model.Jobs.Count(job => job.FinalStatus == "SUCCESS");
-    var unknownJobs = Model.Jobs.Count(job => job.FinalStatus == "UNKNOWN");
+    var errorJobs = Model.Jobs.Count(job => job.FinalStatus == JobFinalStatus.Error);
+    var blockedJobs = Model.Jobs.Count(job => job.FinalStatus == JobFinalStatus.Blocked);
+    var staleJobs = Model.Jobs.Count(job => job.FinalStatus == JobFinalStatus.Stale);
+    var warningJobs = Model.Jobs.Count(job => job.FinalStatus == JobFinalStatus.Warning);
+    var successJobs = Model.Jobs.Count(job => job.FinalStatus == JobFinalStatus.Success);
+    var unknownJobs = Model.Jobs.Count(job => job.FinalStatus == JobFinalStatus.Unknown);
 }
 <!DOCTYPE html>
 <html lang="en">
