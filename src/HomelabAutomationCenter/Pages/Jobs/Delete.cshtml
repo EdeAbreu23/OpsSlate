@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delete Job - Homelab Automation Center</title>
+    <title>Delete Job - OpsSlate</title>
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -90,7 +90,7 @@
             </dl>
 
             <div class="delete-warning">
-                <strong>Warning:</strong> Homelab Automation Center will back up <code>jobs.yml</code> to <code>&lt;jobs file path&gt;.bak.&lt;timestamp&gt;</code> before deleting this job.
+                <strong>Warning:</strong> OpsSlate will back up <code>jobs.yml</code> to <code>&lt;jobs file path&gt;.bak.&lt;timestamp&gt;</code> before deleting this job.
                 @if (hasDependents)
                 {
                     <span>Deletion is blocked by default because other jobs depend on this job.</span>

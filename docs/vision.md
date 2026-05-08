@@ -1,6 +1,6 @@
 # Vision
 
-Homelab Automation Center is a health-aware automation control plane for homelabs.
+OpsSlate is a health-aware automation control plane for homelabs.
 
 It is not just a dashboard for scripts. It helps answer:
 

@@ -1,6 +1,6 @@
-# Homelab Automation Center v1
+# OpsSlate v1
 
-Simple self-hostable dashboard for homelab job health status.
+Simple self-hostable dashboard for job health status.
 
 ## Features
 
@@ -30,11 +30,11 @@ Then open `http://localhost:5087` (or the URL shown in logs).
 ## Docker
 
 ```bash
-docker build -t homelab-automation-center:latest .
+docker build -t opsslate:latest .
 docker run --rm -p 8080:8080 \
   -v $(pwd)/config:/config \
   -v $(pwd)/status:/status \
-  homelab-automation-center:latest
+  opsslate:latest
 ```
 
 ## Docker Compose
@@ -43,12 +43,12 @@ docker run --rm -p 8080:8080 \
 docker compose up --build -d
 ```
 
-The Compose deployment publishes the app on host port `8099` and attaches the container to an existing external Docker network. By default, Homelab Automation Center joins `media_network`, which is useful on Unraid when shared services and monitoring containers already use that network.
+The Compose deployment publishes the app on host port `8099` and attaches the container to an existing external Docker network. By default, OpsSlate joins `media_network`, which is useful on Unraid when shared services and monitoring containers already use that network.
 
-If your shared Docker network has a different name, set `HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK` before deploying. Example `.env`:
+If your shared Docker network has a different name, set `OPSSLATE_DOCKER_NETWORK` before deploying. Existing deployments that already use `HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK` continue to work for backward compatibility. Example `.env`:
 
 ```env
-HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK=media_network
+OPSSLATE_DOCKER_NETWORK=media_network
 HAC_CONFIG_PATH=/config/jobs.yml
 HAC_STATUS_ROOT=/status
 ```
@@ -63,7 +63,7 @@ docker compose up --build -d
 If the old Compose-created default network remains unused, it can be removed:
 
 ```bash
-docker network rm homelab-automation-center_default
+docker network rm opsslate_default
 ```
 
 If Docker reports that the network is still in use, inspect the containers attached to it before removing the network.
@@ -74,7 +74,7 @@ Mounts:
 
 ## Path configuration
 
-Homelab Automation Center supports environment-configurable filesystem paths while keeping Docker defaults unchanged:
+OpsSlate supports environment-configurable filesystem paths while keeping Docker defaults unchanged:
 
 | Environment variable | Default | Purpose |
 | --- | --- | --- |
@@ -118,7 +118,7 @@ Jobs may include an optional `depends_on` list. Dependency checks run after each
 
 Use **Add Job** on the dashboard to open `/Jobs/New` and create a job without manually editing `${HAC_CONFIG_PATH}`. The wizard collects a job ID, display name, status path, stale threshold, and optional comma-separated dependency IDs.
 
-On save, Homelab Automation Center backs up the configured jobs file to `<jobs file path>.bak.<timestamp>`, appends the new job to `jobs.yml`, preserves existing job entries and `depends_on` values, creates the status directory when possible, and writes a starter `status.json` if one does not already exist. Absolute `status_path` values are used directly; relative paths still resolve under `${HAC_STATUS_ROOT}`.
+On save, OpsSlate backs up the configured jobs file to `<jobs file path>.bak.<timestamp>`, appends the new job to `jobs.yml`, preserves existing job entries and `depends_on` values, creates the status directory when possible, and writes a starter `status.json` if one does not already exist. Absolute `status_path` values are used directly; relative paths still resolve under `${HAC_STATUS_ROOT}`.
 
 The wizard validates that job IDs are required, unique ignoring case, and contain only lowercase letters, numbers, underscores, or dashes. It also requires a job name and status path, enforces a positive `stale_after_minutes` value, and checks that dependencies reference existing jobs, are not duplicated, and do not point back to the new job.
 
@@ -127,7 +127,7 @@ The wizard validates that job IDs are required, unique ignoring case, and contai
 
 Use each dashboard row's **Edit** link or the **Edit Job** link on a job detail page to open `/Jobs/Edit/{id}`. The v1 edit workflow shows the selected job ID as read-only and lets you update the display name, status path, stale threshold, and comma-separated dependency IDs.
 
-On save, Homelab Automation Center backs up `${HAC_CONFIG_PATH}` to `<jobs file path>.bak.<timestamp>`, updates only the selected job, preserves all other jobs and unedited YAML fields, and keeps the existing job order. If the status path changes, the app resolves relative paths under `${HAC_STATUS_ROOT}`, creates the status directory when possible, and writes a starter `status.json` only when the new status file does not already exist. Scripts are never edited or executed by the edit workflow.
+On save, OpsSlate backs up `${HAC_CONFIG_PATH}` to `<jobs file path>.bak.<timestamp>`, updates only the selected job, preserves all other jobs and unedited YAML fields, and keeps the existing job order. If the status path changes, the app resolves relative paths under `${HAC_STATUS_ROOT}`, creates the status directory when possible, and writes a starter `status.json` only when the new status file does not already exist. Scripts are never edited or executed by the edit workflow.
 
 The edit form validates that the job name and status path are required, `stale_after_minutes` is greater than zero, dependencies reference existing job IDs, dependencies do not include the job itself, and duplicate dependencies are rejected.
 
@@ -138,7 +138,7 @@ Use each dashboard row's **Delete** link or the **Delete Job** link on a job det
 
 The confirmation page shows the job ID, name, resolved status path, final status, current `depends_on` values, jobs that depend on the selected job, and whether the status file currently exists. If any other jobs depend on the selected job, deletion is blocked by default and the dependent jobs are listed. You can force deletion from the confirmation page when you intentionally want to leave those other jobs and their `depends_on` values unchanged.
 
-On delete, Homelab Automation Center backs up the configured jobs file to `<jobs file path>.bak.<timestamp>` before removing the selected job entry. All other job entries and their `depends_on` values are preserved.
+On delete, OpsSlate backs up the configured jobs file to `<jobs file path>.bak.<timestamp>` before removing the selected job entry. All other job entries and their `depends_on` values are preserved.
 
 Status cleanup is optional. If **Also delete status file/folder** is checked, only the deleted job's resolved status file is removed when it exists. The parent status folder is removed only if it is empty after the file delete; non-empty folders are not recursively deleted. Scripts are never deleted, edited, or executed by the delete workflow.
 
