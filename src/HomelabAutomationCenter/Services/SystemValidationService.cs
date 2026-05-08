@@ -276,6 +276,13 @@ public sealed class SystemValidationService
             {
                 using var document = JsonDocument.Parse(content);
                 Add(results, ValidationStatus.Pass, $"Status file content parses: {DisplayJob(job)}", "Status file content is valid JSON.");
+                if (document.RootElement.ValueKind != JsonValueKind.Object)
+                {
+                    Add(results, ValidationStatus.Error, $"Status file schema: {DisplayJob(job)}", "Status file root must be a JSON object.");
+                    continue;
+                }
+
+                ValidateStatusJsonSchema(results, job, document.RootElement);
                 ValidateLastRun(results, job, document.RootElement);
             }
             catch (JsonException ex)
@@ -283,6 +290,103 @@ public sealed class SystemValidationService
                 Add(results, ValidationStatus.Error, $"Status file content parses: {DisplayJob(job)}", $"Status file contains invalid JSON: {ex.Message}");
             }
         }
+    }
+
+    private static void ValidateStatusJsonSchema(List<ValidationResult> results, JobConfig job, JsonElement root)
+    {
+        ValidateStatusValue(results, job, root);
+        ValidateOptionalNumber(results, job, root, "warnings", ValidationStatus.Warning);
+        ValidateOptionalNumber(results, job, root, "errors", ValidationStatus.Error);
+        ValidateOptionalString(results, job, root, "runtime");
+        ValidateOptionalString(results, job, root, "message");
+    }
+
+    private static void ValidateStatusValue(List<ValidationResult> results, JobConfig job, JsonElement root)
+    {
+        var checkName = $"status value is valid: {DisplayJob(job)}";
+        if (!root.TryGetProperty("status", out var status) || status.ValueKind == JsonValueKind.Null)
+        {
+            Add(results, ValidationStatus.Error, checkName, "status is required but is not present.");
+            return;
+        }
+
+        if (status.ValueKind != JsonValueKind.String)
+        {
+            Add(results, ValidationStatus.Error, checkName, "status is present but is not a string.");
+            return;
+        }
+
+        var value = status.GetString();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            Add(results, ValidationStatus.Warning, checkName, "status is present but blank; dashboard evaluation treats blank status as unknown.");
+            return;
+        }
+
+        var allowedStatuses = new[] { "success", "warning", "error", "unknown" };
+        if (allowedStatuses.Contains(value.Trim(), StringComparer.OrdinalIgnoreCase))
+        {
+            Add(results, ValidationStatus.Pass, checkName, $"status is an allowed value: {value}.");
+            return;
+        }
+
+        Add(results, ValidationStatus.Error, checkName, $"status has unsupported value '{value}'. Expected success, warning, error, unknown, or blank.");
+    }
+
+    private static void ValidateOptionalNumber(
+        List<ValidationResult> results,
+        JobConfig job,
+        JsonElement root,
+        string fieldName,
+        ValidationStatus nonZeroStatus)
+    {
+        var typeCheckName = $"{fieldName} is numeric: {DisplayJob(job)}";
+        if (!root.TryGetProperty(fieldName, out var field) || field.ValueKind == JsonValueKind.Null)
+        {
+            Add(results, ValidationStatus.Pass, typeCheckName, $"{fieldName} is not present.");
+            return;
+        }
+
+        if (field.ValueKind != JsonValueKind.Number)
+        {
+            Add(results, ValidationStatus.Error, typeCheckName, $"{fieldName} is present but is not a number.");
+            return;
+        }
+
+        var rawValue = field.GetRawText();
+        Add(results, ValidationStatus.Pass, typeCheckName, $"{fieldName} is numeric: {rawValue}.");
+
+        if (!field.TryGetDecimal(out var count))
+        {
+            Add(results, ValidationStatus.Error, $"{fieldName} reported: {DisplayJob(job)}", $"{fieldName} value could not be read as a decimal number: {rawValue}.");
+            return;
+        }
+
+        if (count > 0)
+        {
+            Add(results, nonZeroStatus, $"{fieldName} reported: {DisplayJob(job)}", $"{DisplayJob(job)} reports {rawValue} {fieldName}.");
+            return;
+        }
+
+        Add(results, ValidationStatus.Pass, $"{fieldName} reported: {DisplayJob(job)}", $"{DisplayJob(job)} reports no {fieldName}.");
+    }
+
+    private static void ValidateOptionalString(List<ValidationResult> results, JobConfig job, JsonElement root, string fieldName)
+    {
+        var checkName = $"{fieldName} is a string: {DisplayJob(job)}";
+        if (!root.TryGetProperty(fieldName, out var field) || field.ValueKind == JsonValueKind.Null)
+        {
+            Add(results, ValidationStatus.Pass, checkName, $"{fieldName} is not present.");
+            return;
+        }
+
+        if (field.ValueKind == JsonValueKind.String)
+        {
+            Add(results, ValidationStatus.Pass, checkName, $"{fieldName} is a string.");
+            return;
+        }
+
+        Add(results, ValidationStatus.Error, checkName, $"{fieldName} is present but is not a string.");
     }
 
     private static void ValidateLastRun(List<ValidationResult> results, JobConfig job, JsonElement root)
