@@ -49,13 +49,14 @@ public sealed class JobConfigService
             return doc.Jobs
                 .Where(j => !string.IsNullOrWhiteSpace(j.Id)
                     && !string.IsNullOrWhiteSpace(j.Name)
-                    && !string.IsNullOrWhiteSpace(j.StatusPath)
-                    && _pathOptions.TryResolveStatusPath(j.StatusPath, out _, out _))
+                    && !string.IsNullOrWhiteSpace(j.StatusPath))
                 .Select(j => new JobConfig
                 {
                     Id = j.Id.Trim(),
                     Name = j.Name.Trim(),
-                    StatusPath = _pathOptions.ResolveStatusPath(j.StatusPath),
+                    StatusPath = _pathOptions.TryResolveStatusPath(j.StatusPath, out var resolvedStatusPath, out _)
+                        ? resolvedStatusPath
+                        : j.StatusPath.Trim(),
                     StaleAfterMinutes = j.StaleAfterMinutes <= 0 ? 60 : j.StaleAfterMinutes,
                     DependsOn = (j.DependsOn ?? [])
                         .Where(d => !string.IsNullOrWhiteSpace(d))

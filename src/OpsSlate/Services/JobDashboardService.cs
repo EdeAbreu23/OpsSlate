@@ -1,4 +1,6 @@
 using OpsSlate.Models;
+using OpsSlate.Options;
+using Microsoft.Extensions.Options;
 
 namespace OpsSlate.Services;
 
@@ -7,15 +9,18 @@ public sealed class JobDashboardService
     private readonly JobConfigService _jobConfigService;
     private readonly JobStatusService _jobStatusService;
     private readonly JobHealthEvaluator _jobHealthEvaluator;
+    private readonly OpsSlatePathOptions _pathOptions;
 
     public JobDashboardService(
         JobConfigService jobConfigService,
         JobStatusService jobStatusService,
-        JobHealthEvaluator jobHealthEvaluator)
+        JobHealthEvaluator jobHealthEvaluator,
+        IOptions<OpsSlatePathOptions> pathOptions)
     {
         _jobConfigService = jobConfigService;
         _jobStatusService = jobStatusService;
         _jobHealthEvaluator = jobHealthEvaluator;
+        _pathOptions = pathOptions.Value;
     }
 
     public IReadOnlyList<JobViewModel> GetJobs()
@@ -24,7 +29,7 @@ public sealed class JobDashboardService
         var evaluatedJobs = jobs
             .Select(job =>
             {
-                var read = _jobStatusService.ReadStatus(job.StatusPath);
+                var read = ReadStatus(job);
                 return _jobHealthEvaluator.Evaluate(job, read);
             })
             .ToList();
@@ -40,6 +45,21 @@ public sealed class JobDashboardService
     public JobViewModel? GetJob(string id)
     {
         return GetJobs().FirstOrDefault(j => string.Equals(j.Id, id, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private JobStatusReadResult ReadStatus(JobConfig job)
+    {
+        if (!_pathOptions.TryResolveStatusPath(job.StatusPath, out var resolvedStatusPath, out var pathError))
+        {
+            return new JobStatusReadResult
+            {
+                FileFound = false,
+                IsValidJson = false,
+                ErrorMessage = pathError ?? "status_path must resolve under the configured status root."
+            };
+        }
+
+        return _jobStatusService.ReadStatus(resolvedStatusPath);
     }
 
     public static int StatusSortOrder(string finalStatus)

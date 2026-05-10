@@ -15,7 +15,7 @@ public sealed class JobHealthEvaluator
     {
         if (!readResult.FileFound || !readResult.IsValidJson || readResult.Status is null)
         {
-            var unknownReason = readResult.FileFound ? "Status file invalid" : "Status file missing";
+            var unknownReason = DetermineUnknownReason(readResult);
             return Base(
                 job,
                 JobFinalStatus.Unknown,
@@ -43,6 +43,19 @@ public sealed class JobHealthEvaluator
             readResult.FileFound,
             status,
             readResult.ErrorMessage);
+    }
+
+    private static string DetermineUnknownReason(JobStatusReadResult readResult)
+    {
+        if (readResult.FileFound)
+        {
+            return "Status file invalid";
+        }
+
+        return string.IsNullOrWhiteSpace(readResult.ErrorMessage)
+            || string.Equals(readResult.ErrorMessage, "Status file was not found.", StringComparison.Ordinal)
+            ? "Status file missing"
+            : "Status path invalid";
     }
 
     private static string DetermineFinal(string rawStatus, int errors, int warnings, bool isStale)
