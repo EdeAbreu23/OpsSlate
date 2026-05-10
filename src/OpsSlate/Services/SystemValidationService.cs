@@ -27,11 +27,11 @@ public sealed class SystemValidationService
 
         if (!File.Exists(_pathOptions.ConfigPath))
         {
-            Add(results, ValidationStatus.Error, "jobs.yml exists", $"{_pathOptions.ConfigPath} was not found.");
+            Add(results, ValidationStatus.Error, "jobs.yml exists", "Configured jobs file was not found.");
             return results;
         }
 
-        Add(results, ValidationStatus.Pass, "jobs.yml exists", $"{_pathOptions.ConfigPath} was found.");
+        Add(results, ValidationStatus.Pass, "jobs.yml exists", "Configured jobs file was found.");
 
         JobsFile? jobsFile;
         try
@@ -47,7 +47,7 @@ public sealed class SystemValidationService
         }
         catch (Exception ex)
         {
-            Add(results, ValidationStatus.Error, "jobs.yml can be parsed", $"YAML parsing failed: {ex.Message}");
+            Add(results, ValidationStatus.Error, "jobs.yml can be parsed", $"YAML parsing failed: {Concise(ex.Message)}");
             return results;
         }
 
@@ -253,23 +253,30 @@ public sealed class SystemValidationService
     {
         foreach (var job in jobs.Where(job => !string.IsNullOrWhiteSpace(job.StatusPath)))
         {
-            var path = _pathOptions.ResolveStatusPath(job.StatusPath);
-            if (!File.Exists(path))
+            if (!_pathOptions.TryResolveStatusPath(job.StatusPath, out var path, out var pathError))
             {
-                Add(results, ValidationStatus.Warning, $"Status file exists: {DisplayJob(job)}", $"Status file is missing at {path}.");
+                Add(results, ValidationStatus.Error, $"status_path is safe: {DisplayJob(job)}", pathError ?? "status_path must resolve under the configured status root.");
                 continue;
             }
 
-            Add(results, ValidationStatus.Pass, $"Status file exists: {DisplayJob(job)}", $"Status file was found at {path}.");
+            Add(results, ValidationStatus.Pass, $"status_path is safe: {DisplayJob(job)}", "status_path resolves under the configured status root.");
+
+            if (!File.Exists(path))
+            {
+                Add(results, ValidationStatus.Warning, $"Status file exists: {DisplayJob(job)}", "Status file is missing.");
+                continue;
+            }
+
+            Add(results, ValidationStatus.Pass, $"Status file exists: {DisplayJob(job)}", "Status file was found.");
 
             string content;
             try
             {
                 content = File.ReadAllText(path);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Add(results, ValidationStatus.Error, $"Status file can be read: {DisplayJob(job)}", $"Could not read {path}: {Concise(ex.Message)}");
+                Add(results, ValidationStatus.Error, $"Status file can be read: {DisplayJob(job)}", "Could not read status file.");
                 continue;
             }
 

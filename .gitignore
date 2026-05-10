@@ -1,0 +1,27 @@
+# Local environment and secret material
+.env
+.env.*
+!.env.example
+appsettings.Production.json
+appsettings.Local.json
+secrets.json
+*.key
+*.pem
+*.pfx
+
+# Runtime/config data
+/config/
+/status/
+/logs/
+
+# Build outputs
+bin/
+obj/
+TestResults/
+
+# IDE/editor files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo

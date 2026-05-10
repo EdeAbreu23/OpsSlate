@@ -10,12 +10,45 @@ public sealed class OpsSlatePathOptions
 
     public string ResolveStatusPath(string statusPath)
     {
-        var trimmedPath = statusPath.Trim();
-        if (Path.IsPathRooted(trimmedPath))
+        if (string.IsNullOrWhiteSpace(statusPath))
         {
-            return trimmedPath;
+            throw new InvalidOperationException("status_path is required.");
         }
 
-        return Path.GetFullPath(Path.Combine(StatusRoot, trimmedPath));
+        var trimmedPath = statusPath.Trim();
+        var fullStatusRoot = Path.GetFullPath(StatusRoot);
+        var resolvedPath = Path.IsPathRooted(trimmedPath)
+            ? Path.GetFullPath(trimmedPath)
+            : Path.GetFullPath(Path.Combine(fullStatusRoot, trimmedPath));
+
+        if (!IsPathWithinRoot(resolvedPath, fullStatusRoot))
+        {
+            throw new InvalidOperationException($"status_path must resolve under {DefaultStatusRoot} or the configured HAC_STATUS_ROOT directory.");
+        }
+
+        return resolvedPath;
+    }
+
+    public bool TryResolveStatusPath(string statusPath, out string resolvedPath, out string? errorMessage)
+    {
+        try
+        {
+            resolvedPath = ResolveStatusPath(statusPath);
+            errorMessage = null;
+            return true;
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException or InvalidOperationException)
+        {
+            resolvedPath = string.Empty;
+            errorMessage = ex.Message;
+            return false;
+        }
+    }
+
+    private static bool IsPathWithinRoot(string candidatePath, string rootPath)
+    {
+        var normalizedRoot = Path.TrimEndingDirectorySeparator(rootPath);
+        return string.Equals(candidatePath, normalizedRoot, StringComparison.Ordinal)
+            || candidatePath.StartsWith(normalizedRoot + Path.DirectorySeparatorChar, StringComparison.Ordinal);
     }
 }

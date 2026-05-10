@@ -19,16 +19,16 @@
 
     <section class="detail-card" aria-label="App runtime information">
         <dl class="detail-grid">
-            <dt>Config Path</dt>
-            <dd>@Model.Info.ConfigPath</dd>
+            <dt>Config Path Configured</dt>
+            <dd><span class="badge @(Model.Info.ConfigPathConfigured ? "success" : "error")">@(Model.Info.ConfigPathConfigured ? "yes" : "no")</span></dd>
 
-            <dt>/config Exists</dt>
+            <dt>Config Directory Exists</dt>
             <dd><span class="badge @(Model.Info.ConfigDirectoryExists ? "success" : "error")">@(Model.Info.ConfigDirectoryExists ? "yes" : "no")</span></dd>
 
-            <dt>/config/jobs.yml Exists</dt>
+            <dt>Jobs Config Exists</dt>
             <dd><span class="badge @(Model.Info.JobsConfigExists ? "success" : "error")">@(Model.Info.JobsConfigExists ? "yes" : "no")</span></dd>
 
-            <dt>/status Exists</dt>
+            <dt>Status Directory Exists</dt>
             <dd><span class="badge @(Model.Info.StatusDirectoryExists ? "success" : "warning")">@(Model.Info.StatusDirectoryExists ? "yes" : "no")</span></dd>
 
             <dt>Configured Jobs</dt>

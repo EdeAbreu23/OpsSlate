@@ -49,7 +49,8 @@ public sealed class JobConfigService
             return doc.Jobs
                 .Where(j => !string.IsNullOrWhiteSpace(j.Id)
                     && !string.IsNullOrWhiteSpace(j.Name)
-                    && !string.IsNullOrWhiteSpace(j.StatusPath))
+                    && !string.IsNullOrWhiteSpace(j.StatusPath)
+                    && _pathOptions.TryResolveStatusPath(j.StatusPath, out _, out _))
                 .Select(j => new JobConfig
                 {
                     Id = j.Id.Trim(),

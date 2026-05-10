@@ -72,9 +72,6 @@
             <dt>File Found</dt>
             <dd>@(job.FileFound ? "yes" : "no")</dd>
 
-            <dt>Status Path</dt>
-            <dd>@(string.IsNullOrWhiteSpace(job.StatusPath) ? "-" : job.StatusPath)</dd>
-
             <dt>Status Read Error</dt>
             <dd>@(string.IsNullOrWhiteSpace(job.StatusReadErrorMessage) ? "-" : job.StatusReadErrorMessage)</dd>
 

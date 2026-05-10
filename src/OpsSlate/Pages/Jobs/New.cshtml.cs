@@ -29,8 +29,6 @@ public sealed partial class NewModel : PageModel
     public InputModel Input { get; set; } = new();
 
     public IReadOnlyList<JobConfig> ExistingJobs { get; private set; } = [];
-    public string ConfigPath => _pathOptions.ConfigPath;
-    public string StatusRoot => _pathOptions.StatusRoot;
     public string? StatusWarning { get; private set; }
 
     public void OnGet()
@@ -78,7 +76,7 @@ public sealed partial class NewModel : PageModel
     public string BuildDefaultStatusPath(string? jobId = null)
     {
         var id = string.IsNullOrWhiteSpace(jobId) ? "<job_id>" : jobId.Trim();
-        return CombineStatusPath(_pathOptions.StatusRoot, id, "status.json");
+        return $"{id}/status.json";
     }
 
     private void NormalizeInput()
@@ -104,6 +102,11 @@ public sealed partial class NewModel : PageModel
         if (ExistingJobs.Any(job => string.Equals(job.Id, Input.JobId, StringComparison.OrdinalIgnoreCase)))
         {
             ModelState.AddModelError("Input.JobId", "Job ID must be unique. Another job already uses this ID.");
+        }
+
+        if (!_pathOptions.TryResolveStatusPath(Input.StatusPath, out _, out var statusPathError))
+        {
+            ModelState.AddModelError("Input.StatusPath", statusPathError ?? "Status path must resolve under the configured status root.");
         }
 
         var dependencies = ParseDependencies(Input.DependsOn).ToList();
@@ -145,13 +148,6 @@ public sealed partial class NewModel : PageModel
         return dependsOn
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Where(dependency => !string.IsNullOrWhiteSpace(dependency));
-    }
-
-    private static string CombineStatusPath(string root, params string[] parts)
-    {
-        var trimmedRoot = string.IsNullOrWhiteSpace(root) ? OpsSlatePathOptions.DefaultStatusRoot : root.TrimEnd('/');
-        var suffix = string.Join('/', parts.Select(part => part.Trim('/')).Where(part => !string.IsNullOrWhiteSpace(part)));
-        return string.IsNullOrWhiteSpace(suffix) ? trimmedRoot : $"{trimmedRoot}/{suffix}";
     }
 
     [GeneratedRegex("^[a-z0-9_-]+$")]

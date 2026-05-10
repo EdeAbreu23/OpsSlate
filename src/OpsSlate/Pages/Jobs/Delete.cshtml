@@ -45,9 +45,6 @@
                 <dt>Job Name</dt>
                 <dd>@job.Name</dd>
 
-                <dt>Status Path</dt>
-                <dd>@(string.IsNullOrWhiteSpace(job.StatusPath) ? "-" : job.StatusPath)</dd>
-
                 <dt>Final Status</dt>
                 <dd><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></dd>
 
