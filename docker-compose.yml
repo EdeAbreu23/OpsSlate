@@ -11,7 +11,7 @@ services:
       HAC_STATUS_ROOT: ${HAC_STATUS_ROOT:-/status}
     labels:
       net.unraid.docker.icon: "${OPSSLATE_ICON_URL:-https://raw.githubusercontent.com/EdeAbreu23/unraid-templates/main/images/opsslate-icon.png}"
-      net.unraid.docker.webui: "${OPSSLATE_WEBUI_URL:-http://localhost:8099}"
+      net.unraid.docker.webui: "${OPSSLATE_WEBUI_URL:-http://[IP]:[PORT:8080]}"
     volumes:
       - /mnt/user/appdata/opsslate/config:/config
       - /mnt/user/appdata/opsslate/status:/status
