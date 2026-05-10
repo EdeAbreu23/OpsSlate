@@ -58,12 +58,16 @@ docker compose up --build -d
 
 The Compose deployment publishes the app on host port `8099` and attaches the container to an existing external Docker network. By default, OpsSlate joins `media_network`, which is useful on Unraid when shared services and monitoring containers already use that network.
 
-If your shared Docker network has a different name, set `OPSSLATE_DOCKER_NETWORK` before deploying. Existing deployments that already use `HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK` continue to work for backward compatibility. Example `.env`:
+If your shared Docker network has a different name, set `OPSSLATE_DOCKER_NETWORK` before deploying. Existing deployments that already use `HOMELAB_AUTOMATION_CENTER_DOCKER_NETWORK` continue to work for backward compatibility.
+
+OpsSlate also includes Unraid Docker labels for the app icon and WebUI link. The Compose file reads `OPSSLATE_WEBUI_URL` from `.env`, so Unraid can open the correct LAN URL while non-Unraid or default installs safely fall back to `http://localhost:8099`. The icon defaults to the public OpsSlate icon in the `EdeAbreu23/unraid-templates` repository, and can be overridden with `OPSSLATE_ICON_URL` if needed. Example `.env`:
 
 ```env
 OPSSLATE_DOCKER_NETWORK=media_network
 HAC_CONFIG_PATH=/config/jobs.yml
 HAC_STATUS_ROOT=/status
+OPSSLATE_WEBUI_URL=http://192.168.0.42:8099
+OPSSLATE_ICON_URL=https://raw.githubusercontent.com/EdeAbreu23/unraid-templates/main/images/opsslate-icon.png
 ```
 
 Deploy notes after changing networks:
@@ -93,6 +97,8 @@ OpsSlate supports environment-configurable filesystem paths while keeping Docker
 | --- | --- | --- |
 | `HAC_CONFIG_PATH` | `/config/jobs.yml` | YAML file containing dashboard job definitions. |
 | `HAC_STATUS_ROOT` | `/status` | Root directory used to resolve relative `status_path` values from the jobs config. Absolute `status_path` values continue to be used as-is. |
+| `OPSSLATE_WEBUI_URL` | `http://localhost:8099` | Optional Unraid Docker WebUI label URL. Set this in `.env` to your server's LAN URL, for example `http://192.168.0.42:8099`. |
+| `OPSSLATE_ICON_URL` | `https://raw.githubusercontent.com/EdeAbreu23/unraid-templates/main/images/opsslate-icon.png` | Optional Unraid Docker icon label URL. |
 
 For the default Docker and Docker Compose mounts, no path environment variables are required. To run with different mount points, set the variables and update your volume mappings accordingly. Example:
 
