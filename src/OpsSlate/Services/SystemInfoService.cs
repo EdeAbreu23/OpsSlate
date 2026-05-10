@@ -1,43 +1,44 @@
 using OpsSlate.Models;
+using OpsSlate.Options;
+using Microsoft.Extensions.Options;
 
 namespace OpsSlate.Services;
 
 public sealed class SystemInfoService
 {
-    private const string ConfigDirectory = "/config";
-    private const string JobsConfigPath = "/config/jobs.yml";
-    private const string StatusDirectory = "/status";
-
     private readonly JobConfigService _jobConfigService;
+    private readonly OpsSlatePathOptions _pathOptions;
 
-    public SystemInfoService(JobConfigService jobConfigService)
+    public SystemInfoService(JobConfigService jobConfigService, IOptions<OpsSlatePathOptions> pathOptions)
     {
         _jobConfigService = jobConfigService;
+        _pathOptions = pathOptions.Value;
     }
 
     public SystemInfo GetInfo()
     {
+        var configDirectory = Path.GetDirectoryName(_pathOptions.ConfigPath);
         return new SystemInfo
         {
-            ConfigPath = JobsConfigPath,
-            ConfigDirectoryExists = Directory.Exists(ConfigDirectory),
-            JobsConfigExists = File.Exists(JobsConfigPath),
-            StatusDirectoryExists = Directory.Exists(StatusDirectory),
+            ConfigPathConfigured = !string.IsNullOrWhiteSpace(_pathOptions.ConfigPath),
+            ConfigDirectoryExists = !string.IsNullOrWhiteSpace(configDirectory) && Directory.Exists(configDirectory),
+            JobsConfigExists = File.Exists(_pathOptions.ConfigPath),
+            StatusDirectoryExists = Directory.Exists(_pathOptions.StatusRoot),
             ConfiguredJobCount = _jobConfigService.ReadJobs().Count,
             StatusFileCount = CountStatusFiles()
         };
     }
 
-    private static int CountStatusFiles()
+    private int CountStatusFiles()
     {
-        if (!Directory.Exists(StatusDirectory))
+        if (!Directory.Exists(_pathOptions.StatusRoot))
         {
             return 0;
         }
 
         try
         {
-            return Directory.EnumerateFiles(StatusDirectory, "*", SearchOption.AllDirectories).Count();
+            return Directory.EnumerateFiles(_pathOptions.StatusRoot, "*", SearchOption.AllDirectories).Count();
         }
         catch
         {

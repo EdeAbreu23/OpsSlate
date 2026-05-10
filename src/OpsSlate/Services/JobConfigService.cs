@@ -54,7 +54,9 @@ public sealed class JobConfigService
                 {
                     Id = j.Id.Trim(),
                     Name = j.Name.Trim(),
-                    StatusPath = _pathOptions.ResolveStatusPath(j.StatusPath),
+                    StatusPath = _pathOptions.TryResolveStatusPath(j.StatusPath, out var resolvedStatusPath, out _)
+                        ? resolvedStatusPath
+                        : j.StatusPath.Trim(),
                     StaleAfterMinutes = j.StaleAfterMinutes <= 0 ? 60 : j.StaleAfterMinutes,
                     DependsOn = (j.DependsOn ?? [])
                         .Where(d => !string.IsNullOrWhiteSpace(d))

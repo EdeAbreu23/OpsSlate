@@ -28,8 +28,6 @@ public sealed class EditModel : PageModel
     public InputModel Input { get; set; } = new();
 
     public IReadOnlyList<JobConfig> ExistingJobs { get; private set; } = [];
-    public string ConfigPath => _pathOptions.ConfigPath;
-    public string StatusRoot => _pathOptions.StatusRoot;
     public string? StatusWarning { get; private set; }
 
     public IActionResult OnGet(string id)
@@ -112,6 +110,11 @@ public sealed class EditModel : PageModel
         if (!currentJobExists)
         {
             ModelState.AddModelError(string.Empty, $"Job '{Input.JobId}' does not exist.");
+        }
+
+        if (!_pathOptions.TryResolveStatusPath(Input.StatusPath, out _, out var statusPathError))
+        {
+            ModelState.AddModelError("Input.StatusPath", statusPathError ?? "Status path must resolve under the configured status root.");
         }
 
         var dependencies = ParseDependencies(Input.DependsOn).ToList();

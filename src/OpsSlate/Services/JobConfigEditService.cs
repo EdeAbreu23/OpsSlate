@@ -65,9 +65,9 @@ public sealed class JobConfigEditService
         {
             (yamlStream, jobsSequence) = ReadJobsDocument();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return EditJobConfigResult.Failure($"Could not read jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
+            return EditJobConfigResult.Failure("Could not read jobs config.");
         }
 
         var job = FindJob(jobsSequence, editedJob.Id.Trim());
@@ -90,10 +90,10 @@ public sealed class JobConfigEditService
         {
             WriteYamlWithBackup(yaml, backupPath, tempPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             TryDelete(tempPath);
-            return EditJobConfigResult.Failure($"Could not write jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
+            return EditJobConfigResult.Failure("Could not write jobs config.");
         }
 
         var statusWarning = string.Equals(originalStatusPath, editedJob.StatusPath, StringComparison.Ordinal)
@@ -274,9 +274,9 @@ public sealed class JobConfigEditService
 
     private string? TryCreateStarterStatus(string statusPath)
     {
-        var resolvedStatusPath = _pathOptions.ResolveStatusPath(statusPath);
         try
         {
+            var resolvedStatusPath = _pathOptions.ResolveStatusPath(statusPath);
             var statusDirectory = Path.GetDirectoryName(resolvedStatusPath);
             if (!string.IsNullOrWhiteSpace(statusDirectory))
             {
@@ -291,9 +291,9 @@ public sealed class JobConfigEditService
 
             return null;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return $"Job was saved, but starter status.json could not be created at {resolvedStatusPath}: {Concise(ex.Message)}";
+            return "Job was saved, but starter status.json could not be created.";
         }
     }
 

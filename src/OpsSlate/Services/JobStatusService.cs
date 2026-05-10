@@ -14,7 +14,7 @@ public sealed class JobStatusService
 
         if (!File.Exists(statusPath))
         {
-            return Invalid(false, $"Status file was not found at {statusPath}.");
+            return Invalid(false, "Status file was not found.");
         }
 
         string json;
@@ -22,9 +22,9 @@ public sealed class JobStatusService
         {
             json = File.ReadAllText(statusPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return Invalid(true, $"Could not read status file: {Concise(ex.Message)}");
+            return Invalid(true, "Could not read status file.");
         }
 
         if (string.IsNullOrWhiteSpace(json))

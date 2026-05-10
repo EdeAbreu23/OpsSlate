@@ -1,11 +1,11 @@
 jobs:
   - id: health_check
     name: Health Check
-    status_path: /status/health_check/status.json
+    status_path: health_check/status.json
     stale_after_minutes: 60
   - id: backup_nas
     name: NAS Backup
-    status_path: /status/backup_nas/status.json
+    status_path: backup_nas/status.json
     stale_after_minutes: 180
     depends_on:
       - health_check

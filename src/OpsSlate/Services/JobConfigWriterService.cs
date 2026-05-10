@@ -53,9 +53,9 @@ public sealed class JobConfigWriterService
         {
             yaml = BuildUpdatedYaml(job);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return WriteJobConfigResult.Failure($"Could not read existing jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
+            return WriteJobConfigResult.Failure("Could not read existing jobs config.");
         }
 
         var backupPath = BackupPath(_pathOptions.ConfigPath);
@@ -65,10 +65,10 @@ public sealed class JobConfigWriterService
         {
             WriteYamlWithBackup(yaml, backupPath, tempPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             TryDelete(tempPath);
-            return WriteJobConfigResult.Failure($"Could not write jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
+            return WriteJobConfigResult.Failure("Could not write jobs config.");
         }
 
         var statusWarning = TryCreateStarterStatus(job.StatusPath);
@@ -87,9 +87,9 @@ public sealed class JobConfigWriterService
         {
             jobsFile = ReadWritableJobsFile();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return DeleteJobConfigResult.Failure($"Could not read jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
+            return DeleteJobConfigResult.Failure("Could not read jobs config.");
         }
 
         var job = jobsFile.Jobs.FirstOrDefault(job => string.Equals(job.Id, jobId.Trim(), StringComparison.OrdinalIgnoreCase));
@@ -115,10 +115,10 @@ public sealed class JobConfigWriterService
         {
             WriteYamlWithBackup(yaml, backupPath, tempPath);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             TryDelete(tempPath);
-            return DeleteJobConfigResult.Failure($"Could not write jobs config at {_pathOptions.ConfigPath}: {Concise(ex.Message)}");
+            return DeleteJobConfigResult.Failure("Could not write jobs config.");
         }
 
         var statusCleanupMessage = deleteStatusFile
@@ -222,12 +222,12 @@ public sealed class JobConfigWriterService
 
     private string TryDeleteStatusFile(string statusPath)
     {
-        var resolvedStatusPath = _pathOptions.ResolveStatusPath(statusPath);
         try
         {
+            var resolvedStatusPath = _pathOptions.ResolveStatusPath(statusPath);
             if (!File.Exists(resolvedStatusPath))
             {
-                return $"Status file was not found at {resolvedStatusPath}; no status file was deleted.";
+                return "Status file was not found; no status file was deleted.";
             }
 
             File.Delete(resolvedStatusPath);
@@ -235,20 +235,20 @@ public sealed class JobConfigWriterService
             var statusDirectory = Path.GetDirectoryName(resolvedStatusPath);
             if (string.IsNullOrWhiteSpace(statusDirectory) || !Directory.Exists(statusDirectory))
             {
-                return $"Deleted status file at {resolvedStatusPath}.";
+                return "Deleted status file.";
             }
 
             if (Directory.EnumerateFileSystemEntries(statusDirectory).Any())
             {
-                return $"Deleted status file at {resolvedStatusPath}. Parent folder was not deleted because it is not empty.";
+                return "Deleted status file. Parent folder was not deleted because it is not empty.";
             }
 
             Directory.Delete(statusDirectory, recursive: false);
-            return $"Deleted status file at {resolvedStatusPath} and removed the empty parent folder {statusDirectory}.";
+            return "Deleted status file and removed the empty parent folder.";
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return $"Job was deleted, but status cleanup at {resolvedStatusPath} did not complete: {Concise(ex.Message)}";
+            return "Job was deleted, but status cleanup did not complete.";
         }
     }
 
@@ -264,9 +264,9 @@ public sealed class JobConfigWriterService
 
     private string? TryCreateStarterStatus(string statusPath)
     {
-        var resolvedStatusPath = _pathOptions.ResolveStatusPath(statusPath);
         try
         {
+            var resolvedStatusPath = _pathOptions.ResolveStatusPath(statusPath);
             var statusDirectory = Path.GetDirectoryName(resolvedStatusPath);
             if (!string.IsNullOrWhiteSpace(statusDirectory))
             {
@@ -281,9 +281,9 @@ public sealed class JobConfigWriterService
 
             return null;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return $"Job was saved, but starter status.json could not be created at {resolvedStatusPath}: {Concise(ex.Message)}";
+            return "Job was saved, but starter status.json could not be created.";
         }
     }
 

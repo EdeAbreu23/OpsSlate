@@ -12,7 +12,7 @@
 <main class="container detail-container">
     <a class="back-link" asp-page="/Jobs/Details" asp-route-id="@Model.Input.JobId">← Back to job details</a>
     <h1>Edit Job</h1>
-    <p>Update the selected job in <code>@Model.ConfigPath</code>. Job IDs are read-only in v1.</p>
+    <p>Update the selected job in the configured jobs file. Job IDs are read-only in v1.</p>
 
     <section class="form-card" aria-labelledby="edit-job-heading">
         <div class="detail-header">
@@ -49,7 +49,7 @@
                     <label asp-for="Input.StatusPath"></label>
                     <input asp-for="Input.StatusPath" autocomplete="off" />
                     <span asp-validation-for="Input.StatusPath" class="field-validation"></span>
-                    <small>Absolute paths are used as-is. Relative paths resolve under <code>@Model.StatusRoot</code>.</small>
+                    <small>Paths must stay under the configured status root. Relative paths such as <code>backup_nas/status.json</code> are recommended.</small>
                 </div>
 
                 <div class="form-field">
