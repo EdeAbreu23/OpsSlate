@@ -64,7 +64,7 @@ public sealed class JobStatusService
 
     private static string Concise(string message)
     {
-        return string.Join(" ", message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+        return string.Join(" ", message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
     }
 
     private static JobStatusReadResult Invalid(bool fileFound, string errorMessage)
