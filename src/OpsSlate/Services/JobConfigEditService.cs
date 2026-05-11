@@ -319,7 +319,7 @@ public sealed class JobConfigEditService
 
     private static string Concise(string message)
     {
-        return string.Join(" ", message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+        return string.Join(" ", message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
     }
 }
 

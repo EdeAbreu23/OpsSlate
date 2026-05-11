@@ -257,7 +257,7 @@ public sealed class JobConfigWriterService
         var serializedJob = serializer.Serialize(new[] { newJob });
         var indentedJob = string.Join(
             Environment.NewLine,
-            serializedJob.TrimEnd().Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(line => $"  {line}"));
+            serializedJob.TrimEnd().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(line => $"  {line}"));
 
         return $"{existingYaml.TrimEnd()}{Environment.NewLine}{indentedJob}{Environment.NewLine}";
     }
@@ -325,7 +325,7 @@ public sealed class JobConfigWriterService
 
     private static string Concise(string message)
     {
-        return string.Join(" ", message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+        return string.Join(" ", message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
     }
 }
 

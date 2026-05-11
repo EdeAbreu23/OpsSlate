@@ -470,7 +470,7 @@ public sealed class SystemValidationService
 
     private static string Concise(string message)
     {
-        return string.Join(" ", message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+        return string.Join(" ", message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
     }
 
     private static void Add(List<ValidationResult> results, ValidationStatus status, string checkName, string details)
