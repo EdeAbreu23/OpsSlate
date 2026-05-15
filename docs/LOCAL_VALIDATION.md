@@ -1,6 +1,19 @@
 # Local Validation
 
-Use these commands before pushing when you want local validation without relying on GitHub Actions. Run commands from the repository root unless a command says otherwise.
+GitHub Actions for this repository are manual-only. Use these commands before opening or updating a PR when you want validation without spending Actions minutes. Run commands from the repository root unless a command says otherwise.
+
+## Quick Check
+
+Use this for docs-only or narrowly scoped changes:
+
+```bash
+git diff --check
+grep -RIn '<<<<<<<\|=======\|>>>>>>>' . --exclude-dir=.git --exclude-dir=bin --exclude-dir=obj --exclude-dir=TestResults
+```
+
+## Full Check
+
+Run the relevant sections below when the change touches application behavior, Docker/deployment files, dependencies, or security-sensitive docs.
 
 ## Backend
 

@@ -29,12 +29,12 @@ Then open `http://localhost:5087` (or the URL shown in logs).
 
 ## CI
 
-OpsSlate uses the following repository validation and automation:
+OpsSlate keeps GitHub Actions manual-only to avoid routine Actions minute usage. Run local validation before opening or updating PRs, then run manual workflows from GitHub when you intentionally want hosted validation.
 
-- **Backend CI** runs on pull requests targeting `main` and on pushes to `main`. It validates the ASP.NET Core backend by restoring and building `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
-- **Docker CI** builds the Docker image with `docker build -t opsslate:ci .` on pull requests targeting `main` and on pushes to `main`. It does not publish or push images.
-- **CodeQL** runs GitHub CodeQL analysis for C# on pull requests targeting `main`, pushes to `main`, and a weekly schedule.
-- **Dependabot** checks GitHub Actions, NuGet, and Docker dependencies weekly.
+- **Backend CI** restores, builds, and runs test projects when present for `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
+- **Docker CI** builds the Docker image with `docker build -t opsslate:ci .`. It does not publish or push images.
+- **CodeQL** runs GitHub CodeQL analysis for C# when manually dispatched.
+- **Dependabot** routine version PRs are disabled with `open-pull-requests-limit: 0`; keep Dependabot alerts and security updates enabled in GitHub repository settings.
 
 Backend CI safely checks for test projects before running tests. If no test project exists, CI skips `dotnet test` without failing; once test projects are added, they will run automatically.
 
