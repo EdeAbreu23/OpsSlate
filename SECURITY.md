@@ -16,4 +16,4 @@ OpsSlate is intended for trusted, self-hosted network use. The current write pag
 
 ## Local Checks
 
-Run the relevant commands in `docs/LOCAL_VALIDATION.md` before opening or updating a PR. The GitHub Actions workflows are manual-only and should be run intentionally when needed.
+Run the relevant commands in `docs/LOCAL_VALIDATION.md` before opening or updating a PR. Backend CI runs on pull requests, and other GitHub Actions workflows should be run intentionally when needed.

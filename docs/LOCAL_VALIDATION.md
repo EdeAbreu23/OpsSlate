@@ -1,6 +1,6 @@
 # Local Validation
 
-GitHub Actions for this repository are manual-only. Use these commands before opening or updating a PR when you want validation without spending Actions minutes. Run commands from the repository root unless a command says otherwise.
+Backend CI runs on pull requests and can also be started manually. Other GitHub Actions for this repository are manual-only. Use these commands before opening or updating a PR when you want validation without spending extra Actions minutes. Run commands from the repository root unless a command says otherwise.
 
 ## Quick Check
 
@@ -8,7 +8,10 @@ Use this for docs-only or narrowly scoped changes:
 
 ```bash
 git diff --check
-grep -RIn '<<<<<<<\|=======\|>>>>>>>' . --exclude-dir=.git --exclude-dir=bin --exclude-dir=obj --exclude-dir=TestResults
+if grep -RIn '<<<<<<<\|=======\|>>>>>>>' . --exclude=LOCAL_VALIDATION.md --exclude-dir=.git --exclude-dir=bin --exclude-dir=obj --exclude-dir=TestResults; then
+  echo "Merge conflict marker detected."
+  exit 1
+fi
 ```
 
 ## Full Check

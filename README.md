@@ -29,9 +29,9 @@ Then open `http://localhost:5087` (or the URL shown in logs).
 
 ## CI
 
-OpsSlate keeps GitHub Actions manual-only to avoid routine Actions minute usage. Run local validation before opening or updating PRs, then run manual workflows from GitHub when you intentionally want hosted validation.
+OpsSlate keeps routine GitHub Actions limited. The required Backend CI workflow runs on pull requests and can also be started manually; other hosted workflows remain manual-only to avoid routine Actions minute usage. Run local validation before opening or updating PRs.
 
-- **Backend CI** restores, builds, and runs test projects when present for `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
+- **Backend CI** runs on pull requests targeting `main` and on manual dispatch. It restores, builds, and runs test projects when present for `src/OpsSlate/OpsSlate.csproj` with the .NET 8 SDK.
 - **Docker CI** builds the Docker image with `docker build -t opsslate:ci .`. It does not publish or push images.
 - **CodeQL** runs GitHub CodeQL analysis for C# when manually dispatched.
 - **Dependabot** routine version PRs are disabled with `open-pull-requests-limit: 0`; keep Dependabot alerts and security updates enabled in GitHub repository settings.
