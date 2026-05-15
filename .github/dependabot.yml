@@ -1,16 +1,23 @@
 version: 2
+
+# Routine version-update PRs are temporarily disabled locally with
+# open-pull-requests-limit: 0. Keep Dependabot alerts and security updates
+# enabled in GitHub repository settings for security awareness.
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: nuget
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
