@@ -33,3 +33,4 @@ docker compose up --build -d
 - This repository does not currently have a separate frontend package.
 - Keep deployment-specific `.env` values local and uncommitted.
 - Use the existing environment variable names documented in the README for local and Docker configuration.
+- GitHub Actions workflows are manual-only. Previous automatic workflow versions can be restored from Git history if needed.
