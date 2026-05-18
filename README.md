@@ -40,6 +40,21 @@ Backend CI safely checks for test projects before running tests. If no test proj
 
 Frontend CI is intentionally not added yet because this repo does not have a separate frontend project.
 
+
+## Deployment protection
+
+OpsSlate v1 is built for trusted LAN and self-hosted deployments unless you intentionally place protective access controls in front of it. Anyone who can reach the web UI can add, edit, or delete job configuration through `/Jobs/New`, `/Jobs/Edit/{id}`, and `/Jobs/Delete/{id}`. Do not expose OpsSlate directly to the public internet.
+
+Recommended protection options include:
+
+- Reverse proxy basic authentication.
+- Authelia or Authentik in front of the app.
+- Tailscale or VPN-only access.
+- Firewall rules or LAN allowlists that restrict who can reach the container port.
+- Cloudflare Access only when you intentionally expose OpsSlate through Cloudflare.
+
+OpsSlate includes a lightweight built-in rate limit for unsafe HTTP methods to slow repeated write attempts, but this is not authentication. Behind a reverse proxy, forward the real client IP correctly if you want per-client rate limiting instead of limiting by proxy address.
+
 ## Docker
 
 ```bash
@@ -200,6 +215,6 @@ This release does **not** execute scripts, schedule jobs, or provide manual run 
 
 ## Security notes
 
-OpsSlate v1 is intended for trusted, self-hosted networks. The add, edit, and delete job pages can modify the configured jobs file and do not include end-user authentication yet; do not expose the app directly to the public internet. Before any internet-facing deployment, add authentication/authorization (for example, reverse-proxy SSO or app-native auth), CSRF/session hardening review, and role-based controls for write operations.
+OpsSlate v1 is intended for trusted, self-hosted networks. The add, edit, and delete job pages can modify the configured jobs file and do not include end-user authentication yet; do not expose the app directly to the public internet. Protect access with a reverse proxy, Authelia or Authentik, Tailscale or VPN-only access, firewall or LAN allowlists, or Cloudflare Access when intentionally publishing through Cloudflare. Before any broader internet-facing deployment, add authentication/authorization, CSRF/session hardening review, and role-based controls for write operations.
 
 The app does not execute configured commands, does not send notifications, and validates UI-submitted status paths so they resolve under `HAC_STATUS_ROOT` before creating or deleting status files.

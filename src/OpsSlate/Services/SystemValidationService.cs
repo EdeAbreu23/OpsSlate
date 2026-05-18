@@ -470,7 +470,12 @@ public sealed class SystemValidationService
 
     private static string Concise(string message)
     {
-        return string.Join(" ", message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+        const int maxDisplayLength = 240;
+
+        var singleLineMessage = string.Join(" ", message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+        return singleLineMessage.Length <= maxDisplayLength
+            ? singleLineMessage
+            : string.Concat(singleLineMessage.AsSpan(0, maxDisplayLength), "...");
     }
 
     private static void Add(List<ValidationResult> results, ValidationStatus status, string checkName, string details)
