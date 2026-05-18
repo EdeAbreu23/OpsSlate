@@ -25,10 +25,13 @@
         var job = Model.Job!;
         var hasDependents = Model.DependentJobs.Count > 0;
 
-        <h1>Delete Job</h1>
-        <p>Review the job below before removing it from the dashboard configuration.</p>
+        <header class="page-hero danger-hero">
+            <span class="brand-kicker">Delete Confirmation</span>
+            <h1>Delete Job</h1>
+            <p>Review the impact before removing this job from the dashboard configuration.</p>
+        </header>
 
-        <section class="detail-card delete-card" aria-label="Delete job confirmation">
+        <section class="detail-card delete-card danger-zone" aria-label="Delete job confirmation">
             <div class="detail-header">
                 <div>
                     <span class="detail-label">Destructive action</span>
@@ -86,32 +89,35 @@
                 <dd>@(Model.StatusFileExists ? "yes" : "no")</dd>
             </dl>
 
-            <div class="delete-warning">
-                <strong>Warning:</strong> OpsSlate will back up <code>jobs.yml</code> to <code>&lt;jobs file path&gt;.bak.&lt;timestamp&gt;</code> before deleting this job.
+            <div class="delete-warning" role="alert">
+                <strong>Review before deleting</strong>
+                <span>OpsSlate will back up <code>jobs.yml</code> to <code>&lt;jobs file path&gt;.bak.&lt;timestamp&gt;</code> before deleting this job.</span>
                 @if (hasDependents)
                 {
                     <span>Deletion is blocked by default because other jobs depend on this job.</span>
                 }
             </div>
 
-            <form method="post" class="job-form delete-form">
+            <form method="post" class="job-form delete-form" aria-label="Confirm job deletion">
                 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-                <label class="checkbox-field">
-                    <input asp-for="DeleteStatusFile" />
-                    <span>Also delete status file/folder</span>
-                </label>
-                <small class="checkbox-note">Only the resolved status file is deleted. The parent folder is removed only if it is empty afterward; non-empty folders are not recursively deleted.</small>
-
-                @if (hasDependents)
-                {
-                    <label class="checkbox-field force-checkbox">
-                        <input asp-for="ForceDelete" />
-                        <span>Force delete even though other jobs depend on it</span>
+                <div class="delete-options">
+                    <label class="checkbox-field">
+                        <input asp-for="DeleteStatusFile" />
+                        <span>Also delete status file/folder</span>
                     </label>
-                }
+                    <small class="checkbox-note">Only the resolved status file is deleted. The parent folder is removed only if it is empty afterward; non-empty folders are not recursively deleted.</small>
 
-                <div class="form-actions">
+                    @if (hasDependents)
+                    {
+                        <label class="checkbox-field force-checkbox">
+                            <input asp-for="ForceDelete" />
+                            <span>Force delete even though other jobs depend on it</span>
+                        </label>
+                    }
+                </div>
+
+                <div class="form-actions danger-actions">
                     <button class="danger-button" type="submit">Delete Job</button>
                     <a class="back-link" asp-page="/Jobs/Details" asp-route-id="@job.Id">Cancel</a>
                 </div>

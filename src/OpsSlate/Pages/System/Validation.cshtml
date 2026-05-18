@@ -27,10 +27,13 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-<main class="container validation-container">
+<main class="container validation-container system-container">
     <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
-    <h1>System Validation</h1>
-    <p>Checks dashboard configuration and mounted status files without changing job execution behavior.</p>
+    <header class="page-hero">
+        <span class="brand-kicker">System</span>
+        <h1>System Validation</h1>
+        <p>Checks dashboard configuration and mounted status files without changing job execution behavior.</p>
+    </header>
     <div class="refresh-actions">
         <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Validation</a>
     </div>

@@ -15,7 +15,11 @@
 <body>
 <main class="container detail-container">
     <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
-    <h1>@job.Name</h1>
+    <header class="page-hero detail-hero">
+        <span class="brand-kicker">Job Details</span>
+        <h1>@job.Name</h1>
+        <p>Current status, timing, and dependency information for this configured job.</p>
+    </header>
     <div class="refresh-actions">
         <p class="refresh-note">Auto-refreshes every @Model.AutoRefreshSeconds seconds.</p>
         <a class="refresh-now" href="@(Request.Path.ToString() + Request.QueryString.ToString())">Refresh Now</a>
@@ -29,7 +33,26 @@
                 <span class="detail-label">Final Status</span>
                 <span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span>
             </div>
-            <p>@job.Reason</p>
+            <p class="detail-reason">@job.Reason</p>
+        </div>
+
+        <div class="detail-stat-grid" aria-label="Job status summary">
+            <article>
+                <span class="detail-label">Raw Status</span>
+                <strong>@job.RawStatus</strong>
+            </article>
+            <article>
+                <span class="detail-label">Last Run Age</span>
+                <strong>@job.LastRunAge</strong>
+            </article>
+            <article>
+                <span class="detail-label">Runtime</span>
+                <strong>@job.Runtime</strong>
+            </article>
+            <article>
+                <span class="detail-label">File Found</span>
+                <strong>@(job.FileFound ? "yes" : "no")</strong>
+            </article>
         </div>
 
         <dl class="detail-grid">

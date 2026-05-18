@@ -19,8 +19,8 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-<main class="container">
-    <header class="brand-header">
+<main class="container dashboard-container">
+    <header class="brand-header page-hero">
         <span class="brand-kicker">Job Health Dashboard</span>
         <h1>OpsSlate</h1>
         <p>Dashboard overview of configured job health.</p>
@@ -64,8 +64,16 @@
         </article>
     </section>
 
-    <div class="table-wrap">
-    <table>
+    <section class="jobs-panel" aria-labelledby="jobs-table-heading">
+        <div class="panel-header">
+            <div>
+                <span class="detail-label">Configured Jobs</span>
+                <h2 id="jobs-table-heading">Current job status</h2>
+            </div>
+            <p>Sorted as configured. Scroll horizontally on small screens for all status fields.</p>
+        </div>
+        <div class="table-wrap">
+    <table class="jobs-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -90,36 +98,37 @@
         @if (!Model.Jobs.Any())
         {
             <tr>
-                <td colspan="16">No jobs found. Check the configured jobs file.</td>
+                <td colspan="16" data-label="Jobs">No jobs found. Check the configured jobs file.</td>
             </tr>
         }
         else
         {
             foreach (var job in Model.Jobs)
             {
-                <tr class="status-@job.FinalStatus.ToLowerInvariant()">
-                    <td>@job.Id</td>
-                    <td>@job.Name</td>
-                    <td><a class="details-link" asp-page="/Jobs/Details" asp-route-id="@job.Id">View</a></td>
-                    <td><a class="edit-link" asp-page="/Jobs/Edit" asp-route-id="@job.Id">Edit</a></td>
-                    <td><a class="delete-link" asp-page="/Jobs/Delete" asp-route-id="@job.Id">Delete</a></td>
-                    <td><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></td>
-                    <td>@job.Reason</td>
-                    <td>@job.RawStatus</td>
-                    <td>@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</td>
-                    <td>@job.LastRunAge</td>
-                    <td>@job.Runtime</td>
-                    <td>@job.Message</td>
-                    <td>@job.Warnings</td>
-                    <td>@job.Errors</td>
-                    <td>@(job.IsStale ? "yes" : "no")</td>
-                    <td>@(job.FileFound ? "yes" : "no")</td>
+                <tr class="job-row status-@job.FinalStatus.ToLowerInvariant()">
+                    <td data-label="ID" class="job-id">@job.Id</td>
+                    <td data-label="Name" class="job-name">@job.Name</td>
+                    <td data-label="Details"><a class="details-link" asp-page="/Jobs/Details" asp-route-id="@job.Id">View</a></td>
+                    <td data-label="Edit"><a class="edit-link" asp-page="/Jobs/Edit" asp-route-id="@job.Id">Edit</a></td>
+                    <td data-label="Actions"><a class="delete-link" asp-page="/Jobs/Delete" asp-route-id="@job.Id">Delete</a></td>
+                    <td data-label="Final Status"><span class="badge @job.FinalStatus.ToLowerInvariant()">@job.FinalStatus</span></td>
+                    <td data-label="Reason" class="reason-cell">@job.Reason</td>
+                    <td data-label="Raw Status">@job.RawStatus</td>
+                    <td data-label="Last Run (UTC)">@(job.LastRun?.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "-")</td>
+                    <td data-label="Last Run Age">@job.LastRunAge</td>
+                    <td data-label="Runtime">@job.Runtime</td>
+                    <td data-label="Message" class="message-cell">@job.Message</td>
+                    <td data-label="Warnings">@job.Warnings</td>
+                    <td data-label="Errors">@job.Errors</td>
+                    <td data-label="Stale">@(job.IsStale ? "yes" : "no")</td>
+                    <td data-label="File Found">@(job.FileFound ? "yes" : "no")</td>
                 </tr>
             }
         }
         </tbody>
     </table>
-    </div>
+        </div>
+    </section>
 </main>
 </body>
 </html>
