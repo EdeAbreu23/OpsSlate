@@ -692,3 +692,316 @@ code {
   background: rgba(120, 53, 15, 0.24);
   color: #fde68a;
 }
+
+.page-hero {
+  margin-bottom: 0.9rem;
+}
+
+.page-hero p {
+  max-width: 760px;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+h2 {
+  margin: 0;
+  color: #f8fafc;
+}
+
+.jobs-panel,
+.system-card {
+  border: 1px solid #243247;
+  border-radius: 0.95rem;
+  overflow: hidden;
+  background: rgba(17, 28, 49, 0.78);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.42);
+}
+
+.panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1.25rem;
+  border-bottom: 1px solid #243247;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.72));
+}
+
+.panel-header p {
+  max-width: 520px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.jobs-panel .table-wrap,
+.system-card.detail-card {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.jobs-table {
+  min-width: 1180px;
+}
+
+.jobs-table th,
+.jobs-table td {
+  padding: 0.75rem 0.85rem;
+}
+
+.jobs-table td {
+  color: #dbeafe;
+}
+
+.jobs-table .job-id,
+.jobs-table .job-name {
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.jobs-table .reason-cell,
+.jobs-table .message-cell {
+  max-width: 24rem;
+  min-width: 14rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.detail-reason {
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+.detail-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  border-bottom: 1px solid #243247;
+  padding: 1rem;
+}
+
+.detail-stat-grid article {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.detail-stat-grid strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #f8fafc;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.danger-hero .brand-kicker,
+.danger-zone .brand-kicker {
+  border-color: rgba(248, 113, 113, 0.32);
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecaca;
+}
+
+.danger-zone {
+  border-color: rgba(248, 113, 113, 0.42);
+}
+
+.delete-warning strong {
+  color: #fee2e2;
+  font-size: 1rem;
+}
+
+.delete-options {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.danger-actions {
+  border-top: 1px solid #243247;
+  padding-top: 1rem;
+}
+
+.system-container .summary-grid {
+  margin-top: 1rem;
+}
+
+.validation-card {
+  border-left-width: 5px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    width: min(100%, 96vw);
+    margin: 1rem auto;
+    padding: 0 0.75rem 0.9rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detail-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .jobs-panel {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .jobs-panel .table-wrap {
+    overflow: visible;
+  }
+
+  .jobs-table,
+  .jobs-table thead,
+  .jobs-table tbody,
+  .jobs-table th,
+  .jobs-table td,
+  .jobs-table tr {
+    display: block;
+    min-width: 0;
+  }
+
+  .jobs-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .jobs-table tbody {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .jobs-table tbody tr,
+  .jobs-table tbody tr:nth-child(even) {
+    border: 1px solid #243247;
+    border-left-width: 5px;
+    border-radius: 0.85rem;
+    overflow: hidden;
+    background: rgba(17, 28, 49, 0.92);
+    box-shadow: 0 12px 28px rgba(2, 6, 23, 0.32);
+  }
+
+  .jobs-table td {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 38%) 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    border-bottom: 1px solid #243247;
+    padding: 0.7rem 0.8rem;
+  }
+
+  .jobs-table td::before {
+    content: attr(data-label);
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .jobs-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .jobs-table .reason-cell,
+  .jobs-table .message-cell {
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .summary-grid,
+  .detail-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .refresh-actions,
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .refresh-now,
+  .dashboard-link,
+  .edit-link-pill,
+  .delete-link-pill,
+  .primary-button,
+  .danger-button {
+    text-align: center;
+  }
+
+  .detail-header,
+  .panel-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .jobs-table td {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .jobs-table tbody tr.status-error,
+  .jobs-table tbody tr.status-error:nth-child(even) {
+    border-left-color: #f87171;
+    background: rgba(69, 26, 26, 0.5);
+  }
+
+  .jobs-table tbody tr.status-blocked,
+  .jobs-table tbody tr.status-blocked:nth-child(even) {
+    border-left-color: #22d3ee;
+    background: rgba(22, 78, 99, 0.42);
+  }
+
+  .jobs-table tbody tr.status-stale,
+  .jobs-table tbody tr.status-stale:nth-child(even) {
+    border-left-color: #a78bfa;
+    background: rgba(76, 29, 149, 0.38);
+  }
+
+  .jobs-table tbody tr.status-warning,
+  .jobs-table tbody tr.status-warning:nth-child(even) {
+    border-left-color: #fbbf24;
+    background: rgba(120, 53, 15, 0.38);
+  }
+
+  .jobs-table tbody tr.status-success,
+  .jobs-table tbody tr.status-success:nth-child(even) {
+    border-left-color: #4ade80;
+    background: rgba(22, 101, 52, 0.34);
+  }
+
+  .jobs-table tbody tr.status-unknown,
+  .jobs-table tbody tr.status-unknown:nth-child(even) {
+    border-left-color: #94a3b8;
+    background: rgba(51, 65, 85, 0.38);
+  }
+}
