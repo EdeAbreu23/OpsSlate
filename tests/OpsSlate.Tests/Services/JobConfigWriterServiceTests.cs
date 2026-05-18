@@ -215,7 +215,7 @@ public sealed class JobConfigWriterServiceTests
 
     private static JobConfigWriterService CreateService(string configPath, string statusRoot)
     {
-        return new JobConfigWriterService(Options.Create(new OpsSlatePathOptions
+        return new JobConfigWriterService(Microsoft.Extensions.Options.Options.Create(new OpsSlatePathOptions
         {
             ConfigPath = configPath,
             StatusRoot = statusRoot

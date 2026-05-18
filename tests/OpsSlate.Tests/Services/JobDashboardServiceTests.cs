@@ -106,7 +106,7 @@ public sealed class JobDashboardServiceTests
 
     private static JobDashboardService CreateService(TestTempDirectory temp)
     {
-        var options = Options.Create(new OpsSlatePathOptions
+        var options = Microsoft.Extensions.Options.Options.Create(new OpsSlatePathOptions
         {
             ConfigPath = temp.ConfigPath,
             StatusRoot = temp.StatusRoot

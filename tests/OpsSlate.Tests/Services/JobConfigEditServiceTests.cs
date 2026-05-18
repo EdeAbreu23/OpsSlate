@@ -108,7 +108,7 @@ public sealed class JobConfigEditServiceTests
 
     private static JobConfigEditService CreateService(string configPath, string statusRoot)
     {
-        return new JobConfigEditService(Options.Create(new OpsSlatePathOptions
+        return new JobConfigEditService(Microsoft.Extensions.Options.Options.Create(new OpsSlatePathOptions
         {
             ConfigPath = configPath,
             StatusRoot = statusRoot
