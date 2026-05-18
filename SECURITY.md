@@ -2,11 +2,19 @@
 
 OpsSlate is intended for trusted, self-hosted network use. The current write pages can add, edit, and delete job configuration without end-user authentication.
 
-## Exposure Boundary
+## Deployment Protection
 
-- Do not expose OpsSlate directly to the public internet in its current form.
-- Add reverse-proxy authentication, SSO, or app-native authentication before any internet-facing deployment.
-- Treat access to the web UI as access to modify the configured jobs file.
+OpsSlate v1 is trusted LAN and self-hosted software unless protected by external access controls. Anyone who can reach the web UI can add, edit, or delete job configuration through `/Jobs/New`, `/Jobs/Edit/{id}`, and `/Jobs/Delete/{id}`. Do not expose OpsSlate directly to the public internet.
+
+Recommended protection options include:
+
+- Reverse proxy basic authentication.
+- Authelia or Authentik in front of the app.
+- Tailscale or VPN-only access.
+- Firewall rules or LAN allowlists that restrict who can reach the container port.
+- Cloudflare Access only when you intentionally expose OpsSlate through Cloudflare.
+
+OpsSlate includes a lightweight built-in rate limit for unsafe HTTP methods to slow repeated write attempts, but this is not authentication. Behind a reverse proxy, forward the real client IP correctly if you want per-client rate limiting instead of limiting by proxy address.
 
 ## Configuration
 

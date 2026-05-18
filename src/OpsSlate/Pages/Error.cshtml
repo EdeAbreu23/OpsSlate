@@ -1,0 +1,33 @@
+@page
+@model OpsSlate.Pages.ErrorModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error - OpsSlate</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<main class="container detail-container">
+    <p><a class="back-link" asp-page="/Index">← Back to dashboard</a></p>
+    <section class="detail-card" aria-labelledby="error-heading">
+        <div class="detail-header">
+            <div>
+                <span class="detail-label">Request could not be completed</span>
+                <h1 id="error-heading">Something went wrong</h1>
+                <p>OpsSlate could not complete this request. Check the application logs on the host for local diagnostics.</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.RequestId))
+        {
+            <dl class="detail-grid">
+                <dt>Request ID</dt>
+                <dd><code>@Model.RequestId</code></dd>
+            </dl>
+        }
+    </section>
+</main>
+</body>
+</html>
